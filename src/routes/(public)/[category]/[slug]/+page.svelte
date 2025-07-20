@@ -56,9 +56,13 @@
   }
 
   function runClientSideLogic() {
-    generateToc();
-    insertRelatedArticles();
-  }
+    if (!browser) return;
+
+    window.requestAnimationFrame(() => {
+        generateToc();
+        insertRelatedArticles();
+    });
+}
 
   onMount(() => {
     runClientSideLogic();
@@ -155,7 +159,8 @@
         
        
 
-        {#if post.featuredImage}<figure class="my-6"><img src={post.featuredImage.url} alt={post.title} class="w-full h-auto object-cover" /></figure>{/if}
+        {#if post.featuredImage}<figure class="my-6"><img src={post.featuredImage.url} alt={post.title} class="w-full h-auto object-cover" loading="eager"
+  fetchpriority="high"/></figure>{/if}
         {#if headings.length > 1}
   <div class="my-8 border border-gray-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 rounded-lg overflow-hidden">
     <button

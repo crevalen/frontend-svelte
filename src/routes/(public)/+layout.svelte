@@ -158,9 +158,6 @@
   <svelte:head>
   <title>{data.settings?.site_title || 'Judul Situs Default'}</title>
   
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
-  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet" />
 
   {#if data.settings?.site_favicon_url}<link rel="icon" href={data.settings.site_favicon_url} />{/if}
   {#if data.settings?.gsc_verification_code}<meta name="google-site-verification" content={data.settings.gsc_verification_code} />{/if}
