@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount} from 'svelte';
+  import { onMount } from 'svelte';
   import { afterNavigate } from '$app/navigation';
   import { browser } from '$app/environment';
   import type { PageData } from './$types';
@@ -12,19 +12,16 @@
   import PopularPosts from '$lib/components/sidebar/PopularPosts.svelte';
   import TableOfContents from '$lib/components/ui/TableOfContents.svelte';
   import { slide } from 'svelte/transition';
- 
+
   export let data: PageData;
 
-  // Variabel Reaktif
   $: ({ post, meta, jsonLd, comments, relatedPosts, popularPosts } = data);
   $: readTime = post.content ? calculateReadTime(post.content) : 0;
   $: category = post.categories?.[0];
 
-  // State & Logika UI
   let headings: { id: string; text: string; level: 'h2' | 'h3' }[] = [];
   let showToc = false;
 
-  // --- FUNGSI-FUNGSI YANG DIKEMBALIKAN ---
   function generateToc() {
     if (!browser || !post.content) return;
     const articleContent = document.querySelector('#article-content');
@@ -42,7 +39,7 @@
     });
     headings = newHeadings;
   }
-  
+
   function insertRelatedArticles() {
     const articleContent = document.querySelector('#article-content');
     const inlineRelatedContainer = document.querySelector('#inline-related-container');
@@ -57,7 +54,6 @@
       (inlineRelatedContainer as HTMLElement).style.display = 'block';
     }
   }
-  // --- SELESAI FUNGSI YANG DIKEMBALIKAN ---
 
   function runClientSideLogic() {
     generateToc();
@@ -71,26 +67,34 @@
     }, 5000);
     return () => clearTimeout(timer);
   });
+
   afterNavigate(runClientSideLogic);
 
-  // --- MENGGUNAKAN KEMBALI METODE safeSchemaString ---
-  $: safeSchemaString = (() => {
-    if (!post) return ''; // Pengaman jika post belum ada
+  function getSafeSchemaString() {
+    if (!post) return '';
     const breadcrumbSchema = {
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
       itemListElement: [
         { '@type': 'ListItem', position: 1, name: 'Beranda', item: PUBLIC_SITE_URL },
-        ...(category ? [{ '@type': 'ListItem', position: 2, name: category.name, item: `${PUBLIC_SITE_URL}/kategori/${category.slug}`}] : []),
-        { '@type': 'ListItem', position: category ? 3 : 2, name: post.title }
-      ]
+        ...(category
+          ? [
+              {
+                '@type': 'ListItem',
+                position: 2,
+                name: category.name,
+                item: `${PUBLIC_SITE_URL}/kategori/${category.slug}`,
+              },
+            ]
+          : []),
+        { '@type': 'ListItem', position: category ? 3 : 2, name: post.title },
+      ],
     };
     const schemas = [jsonLd, breadcrumbSchema].filter(Boolean);
-    // Ganti karakter '<' agar tidak mengganggu parser HTML
     return JSON.stringify(schemas).replace(/</g, '\\u003c');
-  })();
-  // --- SELESAI ---
+  }
 
+  $: safeSchemaString = getSafeSchemaString();
 </script>
 
 <svelte:head>
