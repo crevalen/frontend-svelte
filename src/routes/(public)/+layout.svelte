@@ -142,7 +142,7 @@
 
 <TopHeader pages={data.pages} />
 
-{#if $page.route.id === '/[category]/[slug]'}
+{#if $page.route.id === '/(public)/[category]/[slug]'}
   <ReadingProgressBar />
 {/if}
 
@@ -151,9 +151,9 @@
     <Header siteTitle={data.settings?.site_title} siteLogoUrl={data.settings?.site_logo_url} />
   </div>
   <main class="flex-grow">
-    {#key data.url}
+    
         <slot />
-    {/key}
+    
 </main>
 
   <Footer />
