@@ -21,6 +21,7 @@
   
   export let data: PageData;
 
+
   // --- LOGIKA BARU UNTUK COOKIE BANNER ---
   let showCookieBanner = false;
 
@@ -97,6 +98,9 @@
   // --- SELESAI LOGIKA BARU ---
 
 
+$: finalDescription = data.meta?.description || data.settings?.site_description || 'Deskripsi default website.';
+
+
    $: if (browser) {
     const html = document.documentElement;
     if ($theme === 'dark') {
@@ -153,7 +157,8 @@
 
 <svelte:head>
   <title>{data.settings?.site_title || 'Judul Situs Default'}</title>
-  <meta name="description" content={data.settings?.site_description || 'Deskripsi default website.'} />
+  
+  <meta name="description" content={finalDescription} />
   
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />

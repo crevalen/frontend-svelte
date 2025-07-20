@@ -104,7 +104,6 @@
 
 <svelte:head>
   <title>{meta.title}</title>
-  <meta name="description" content={meta.description} />
   <link rel="canonical" href={meta.canonical} />
   <meta name="robots" content={meta.robots} />
 
