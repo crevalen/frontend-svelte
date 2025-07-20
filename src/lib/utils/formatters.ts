@@ -1,7 +1,13 @@
 // src/lib/utils/formatters.ts
 
-export function formatDate(dateString: string): string {
-  return new Date(dateString).toLocaleDateString('id-ID', {
+/**
+ * Memformat tanggal dari string atau objek Date ke format Indonesia.
+ */
+export function formatDate(dateInput: string | Date): string {
+  // Ubah input menjadi objek Date, tidak peduli format aslinya
+  const date = new Date(dateInput);
+  
+  return date.toLocaleDateString('id-ID', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -10,15 +16,13 @@ export function formatDate(dateString: string): string {
 
 /**
  * Menghitung estimasi waktu baca dari sebuah teks.
- * @param content Teks atau konten artikel dalam format HTML string.
  */
 export function calculateReadTime(content: string): number {
-  const wordsPerMinute = 200; // Rata-rata kecepatan membaca
-  // Hilangkan tag HTML untuk menghitung kata dengan lebih akurat
+  const wordsPerMinute = 200;
   const textOnly = content.replace(/<[^>]+>/g, ' ');
   const wordCount = textOnly.split(/\s+/).filter(Boolean).length;
   const minutes = Math.ceil(wordCount / wordsPerMinute);
-  return minutes > 0 ? minutes : 1; // Pastikan waktu baca minimal 1 menit
+  return minutes > 0 ? minutes : 1;
 }
 
 export function urlBase64ToUint8Array(base64String: string) {

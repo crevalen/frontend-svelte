@@ -12,88 +12,91 @@
   import PopularPosts from '$lib/components/sidebar/PopularPosts.svelte';
   import TableOfContents from '$lib/components/ui/TableOfContents.svelte';
   import { slide } from 'svelte/transition';
+ 
+  export let data: PageData;
 
- export let data: PageData;
-
-	  // Variabel Reaktif
+  // Variabel Reaktif
   $: ({ post, meta, jsonLd, comments, relatedPosts, popularPosts } = data);
   $: readTime = post.content ? calculateReadTime(post.content) : 0;
   $: category = post.categories?.[0];
 
-  // State UI
+  // State & Logika UI
   let headings: { id: string; text: string; level: 'h2' | 'h3' }[] = [];
   let showToc = false;
 
-  // --- FUNGSI UTAMA UNTUK SEMUA LOGIKA CLIENT-SIDE ---
-  function runClientSideLogic() {
-    if (!browser) return; // Pengaman ekstra
-
-    // 1. Injeksi Skema JSON-LD
-    const schemaScriptTag = document.getElementById('schema-ld-json');
-    if (schemaScriptTag) {
-      const breadcrumbSchema = {
-        '@context': 'https://schema.org',
-        '@type': 'BreadcrumbList',
-        itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Beranda', item: PUBLIC_SITE_URL },
-          ...(category ? [{ '@type': 'ListItem', position: 2, name: category.name, item: `${PUBLIC_SITE_URL}/kategori/${category.slug}`}] : []),
-          { '@type': 'ListItem', position: category ? 3 : 2, name: post.title }
-        ]
-      };
-      const schemas = [jsonLd, breadcrumbSchema].filter(Boolean);
-      schemaScriptTag.textContent = JSON.stringify(schemas, null, 2);
-    }
-
-    // 2. Generate Daftar Isi
+  // --- FUNGSI-FUNGSI YANG DIKEMBALIKAN ---
+  function generateToc() {
+    if (!browser || !post.content) return;
     const articleContent = document.querySelector('#article-content');
-    if (articleContent) {
-      const headingElements = articleContent.querySelectorAll(':scope > h2, :scope > h3');
-      const newHeadings: typeof headings = [];
-      headingElements.forEach((el, i) => {
-        const text = el.textContent || '';
-        let id = el.id;
-        if (!id) {
-          id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-          el.id = `${id}-${i}`;
-        }
-        newHeadings.push({ id: el.id, text, level: el.nodeName.toLowerCase() as 'h2' | 'h3' });
-      });
-      headings = newHeadings;
-    }
-    
-    // 3. Sisipkan 'Baca Juga'
+    if (!articleContent) return;
+    const headingElements = articleContent.querySelectorAll(':scope > h2, :scope > h3');
+    const newHeadings: typeof headings = [];
+    headingElements.forEach((el, i) => {
+      const text = el.textContent || '';
+      let id = el.id;
+      if (!id) {
+        id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        el.id = `${id}-${i}`;
+      }
+      newHeadings.push({ id: el.id, text, level: el.nodeName.toLowerCase() as 'h2' | 'h3' });
+    });
+    headings = newHeadings;
+  }
+  
+  function insertRelatedArticles() {
+    const articleContent = document.querySelector('#article-content');
     const inlineRelatedContainer = document.querySelector('#inline-related-container');
-    if (inlineRelatedContainer && articleContent) {
-        if(inlineRelatedContainer.parentElement !== document.body) {
-            document.body.appendChild(inlineRelatedContainer);
-            (inlineRelatedContainer as HTMLElement).style.display = 'none';
-        }
-        const paragraphs = articleContent.querySelectorAll('p');
-        if (paragraphs.length > 3) {
-            paragraphs[3].after(inlineRelatedContainer);
-            (inlineRelatedContainer as HTMLElement).style.display = 'block';
-        }
+    if (inlineRelatedContainer && inlineRelatedContainer.parentElement !== document.body) {
+      document.body.appendChild(inlineRelatedContainer);
+      (inlineRelatedContainer as HTMLElement).style.display = 'none';
+    }
+    if (!articleContent || !inlineRelatedContainer) return;
+    const paragraphs = articleContent.querySelectorAll('p');
+    if (paragraphs.length > 3) {
+      paragraphs[3].after(inlineRelatedContainer);
+      (inlineRelatedContainer as HTMLElement).style.display = 'block';
     }
   }
+  // --- SELESAI FUNGSI YANG DIKEMBALIKAN ---
 
-  // Jalankan fungsi di atas saat halaman pertama kali dimuat
+  function runClientSideLogic() {
+    generateToc();
+    insertRelatedArticles();
+  }
+
   onMount(() => {
     runClientSideLogic();
-    
-    // Logika View Counter (hanya berjalan sekali)
     const timer = setTimeout(() => {
       fetch(`/api/posts/${post.slug}/view`, { method: 'POST' });
     }, 5000);
-    
     return () => clearTimeout(timer);
   });
-
-  // Jalankan kembali fungsi saat bernavigasi dari artikel lain
   afterNavigate(runClientSideLogic);
+
+  // --- MENGGUNAKAN KEMBALI METODE safeSchemaString ---
+  $: safeSchemaString = (() => {
+    if (!post) return ''; // Pengaman jika post belum ada
+    const breadcrumbSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Beranda', item: PUBLIC_SITE_URL },
+        ...(category ? [{ '@type': 'ListItem', position: 2, name: category.name, item: `${PUBLIC_SITE_URL}/kategori/${category.slug}`}] : []),
+        { '@type': 'ListItem', position: category ? 3 : 2, name: post.title }
+      ]
+    };
+    const schemas = [jsonLd, breadcrumbSchema].filter(Boolean);
+    // Ganti karakter '<' agar tidak mengganggu parser HTML
+    return JSON.stringify(schemas).replace(/</g, '\\u003c');
+  })();
+  // --- SELESAI ---
+
 </script>
 
 <svelte:head>
-  <script type="application/ld+json" id="schema-ld-json"></script>
+  {#if safeSchemaString}
+    <script type="application/ld+json">{@html safeSchemaString}</script>
+  {/if}
   <title>{meta.title}</title>
   <meta name="description" content={meta.description} />
   <link rel="canonical" href={meta.canonical} />
@@ -136,9 +139,13 @@
             <img src={post.author.avatarUrl || '/default-avatar.png'} alt={post.author.displayName} class="w-8 h-8 rounded-full" />
             <span class="font-semibold text-gray-800 dark:text-gray-200">{post.author.displayName}</span>
           </div>
-          <div class="flex items-center gap-4">
+           <div class="flex items-center gap-4">
             <span class="hidden sm:inline">•</span>
-            <time datetime={post.publishedAt}>{formatDate(post.publishedAt)}</time>
+            {#if post.publishedAt}
+              <time datetime={new Date(post.publishedAt).toISOString()}>
+                {formatDate(post.publishedAt)}
+              </time>
+            {/if}
             {#if readTime > 0}<span class="hidden sm:inline">•</span><span>{readTime} menit baca</span>{/if}
           </div>
         </div>
