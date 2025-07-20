@@ -23,7 +23,7 @@
     isLoading = true;
     message = '';
 
-    const response = await fetch(`https://cms-kustom.vercel.app/api/comments/${postSlug}`, {
+    const response = await fetch(`/api/comments/${postSlug}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ content, authorName, authorEmail, parentId })

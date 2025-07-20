@@ -1,0 +1,134 @@
+generator client {
+  provider   = "prisma-client-js"
+  engineType = "library"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id           String    @id @default(cuid())
+  username     String    @unique
+  passwordHash String
+  role         Role      @default(AUTHOR)
+  avatarUrl    String?
+  bio          String?
+  displayName  String?
+  posts        Post[]
+  sessions     Session[]
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Post {
+  id              String     @id @default(cuid())
+  slug            String     @unique
+  title           String
+  content         String
+  published       Boolean    @default(false)
+  metaTitle       String?
+  metaDescription String?
+  focusKeyword    String?
+  ogTitle         String?
+  ogDescription   String?
+  canonicalUrl    String?
+  noIndex         Boolean    @default(false)
+  noFollow        Boolean    @default(false)
+  schemaType      String?
+  publishedAt     DateTime?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  authorId        String
+  featuredImageId String?    @unique
+  ogImageId       String?    @unique
+  viewCount       Int        @default(0)
+  comments        Comment[]
+  author          User       @relation(fields: [authorId], references: [id])
+  featuredImage   Media?     @relation("PostToFeaturedImage", fields: [featuredImageId], references: [id])
+  ogImage         Media?     @relation("PostToOgImage", fields: [ogImageId], references: [id])
+  categories      Category[] @relation("CategoryToPost")
+  tags            Tag[]      @relation("PostToTag")
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  name      String   @unique
+  updatedAt DateTime @default(now()) @updatedAt
+  posts     Post[]   @relation("CategoryToPost")
+}
+
+model Tag {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  name      String   @unique
+  updatedAt DateTime @default(now()) @updatedAt
+  posts     Post[]   @relation("PostToTag")
+}
+
+model Media {
+  id                  String   @id @default(cuid())
+  key                 String   @unique
+  url                 String   @unique
+  altText             String?
+  fileType            String
+  size                Int
+  createdAt           DateTime @default(now())
+  PostAsFeaturedImage Post?    @relation("PostToFeaturedImage")
+  PostAsOgImage       Post?    @relation("PostToOgImage")
+}
+
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+model Page {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  title           String
+  content         String
+  published       Boolean  @default(false)
+  metaTitle       String?
+  metaDescription String?
+  schemaType      String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Comment {
+  id          String    @id @default(cuid())
+  content     String
+  authorName  String
+  authorEmail String
+  isApproved  Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  postId      String
+  parentId    String?
+  parent      Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies     Comment[] @relation("CommentReplies")
+  post        Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+  AUTHOR
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+}

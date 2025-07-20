@@ -1,5 +1,11 @@
 declare global {
   namespace App {
+
+    interface Locals {
+      user: User | null;
+      session: Session | null;
+    }
+
     // Daftarkan interface SiteSettings di sini
     interface SiteSettings {
       site_title?: string;
@@ -15,6 +21,7 @@ declare global {
       custom_head_script?: string;
       custom_footer_script?: string;
     }
+
 
     // SvelteKit akan secara otomatis menambahkan 'settings: SiteSettings' ke PageData
     // jadi kita tidak perlu menuliskannya di sini.
