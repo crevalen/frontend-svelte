@@ -18,6 +18,7 @@
   import NotificationPopup from '$lib/components/ui/NotificationPopup.svelte'; 
   import { urlBase64ToUint8Array } from '$lib/utils/formatters';
   
+  
  
 
   
@@ -26,6 +27,8 @@
 
   // --- LOGIKA BARU UNTUK COOKIE BANNER ---
   let showCookieBanner = false;
+  let lastScrollY = 0;
+  let showHeader = true;
 
   function handleAcceptCookies() {
     showCookieBanner = false;
@@ -59,6 +62,8 @@
     }
   }
 
+  
+
   function handleRejectNotification() {
     showNotificationPopup = false;
     const rejectionTime = new Date().getTime();
@@ -73,13 +78,17 @@
       html.classList.remove('dark');
     }
   }
-
-  let lastScrollY = 0;
-  let showHeader = true;
-  NProgress.configure({ showSpinner: false });
-  beforeNavigate(() => NProgress.start());
-  afterNavigate(() => NProgress.done());
+NProgress.configure({ showSpinner: false });
+  beforeNavigate(() => {
+    NProgress.start();
+    showHeader = true; // Paksa header terlihat sebelum navigasi
+  });
+  afterNavigate(() => {
+    NProgress.done();
+  });
+  
   function handleScroll() {
+    if (!browser) return;
     const currentScrollY = window.scrollY;
     if (currentScrollY > lastScrollY && currentScrollY > 150) {
       showHeader = false;
@@ -88,6 +97,7 @@
     }
     lastScrollY = currentScrollY;
   }
+
   onMount(() => {
 
     if (browser && 'Notification' in window && Notification.permission === 'default') {
