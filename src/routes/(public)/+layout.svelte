@@ -157,20 +157,21 @@
 
   <svelte:head>
   <title>{data.settings?.site_title || 'Judul Situs Default'}</title>
-  
+  <meta name="google-site-verification" content="nVnoX2VqJN1VEotoKyNBB1WHBUdK86IANmecOn95yXs" />
 
   {#if data.settings?.site_favicon_url}<link rel="icon" href={data.settings.site_favicon_url} />{/if}
   {#if data.settings?.gsc_verification_code}<meta name="google-site-verification" content={data.settings.gsc_verification_code} />{/if}
   {#if data.settings?.bing_verification_code}<meta name="msvalidate.01" content={data.settings.bing_verification_code} />{/if}
   {#if data.settings?.yandex_verification_code}<meta name="yandex-verification" content={data.settings.yandex_verification_code} />{/if}
   {#if browser && data.settings?.ga4_id}
-    <script async src="https://www.googletagmanager.com/gtag/js?id={data.settings.ga4_id}"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', '{data.settings.ga4_id}');
-    </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-LXGKK2J43E"></script>
+   <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-LXGKK2J43E');
+</script>
   {/if}
   {#if data.settings?.custom_head_script}{@html data.settings.custom_head_script}{/if}
 </svelte:head>
