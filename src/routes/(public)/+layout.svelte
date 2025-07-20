@@ -39,69 +39,33 @@
     async function handleAcceptNotification() {
     showNotificationPopup = false;
     if (!browser || !('Notification' in window) || !('serviceWorker' in navigator)) {
-      console.error('Browser tidak mendukung notifikasi atau service worker.');
       return;
     }
-    
-    try {
-      const permission = await Notification.requestPermission();
-      if (permission === 'granted') {
-        console.log('Izin notifikasi diberikan!');
-        
-        await navigator.serviceWorker.register('/service-worker.js');
-        console.log('Service worker didaftarkan. Menunggu hingga aktif...');
-
-        // --- PERBAIKAN DI SINI ---
-        // Tunggu sampai service worker benar-benar 'ready' dan aktif
-        const swRegistration = await navigator.serviceWorker.ready;
-        console.log('Service worker aktif:', swRegistration);
-        // --- SELESAI PERBAIKAN ---
-
-        const vapidKeyString = import.meta.env.VITE_PUBLIC_VAPID_KEY;
-        if (!vapidKeyString) {
-          console.error('VITE_PUBLIC_VAPID_KEY tidak ditemukan.');
-          return;
-        }
-
-        const applicationServerKey = urlBase64ToUint8Array(vapidKeyString);
-        
-        console.log('Mencoba subscribe ke push manager...');
-        const subscription = await swRegistration.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey
-        });
-        console.log('Berhasil subscribe:', subscription);
-
-        console.log('Mengirim subscription ke server...');
-        const response = await fetch('https://cms-kustom.vercel.app/api/subscriptions/save', {
-          method: 'POST',
-          body: JSON.stringify(subscription),
-          headers: { 'Content-Type': 'application/json' }
-        });
-
-        if (response.ok) {
-          console.log('Subscription berhasil disimpan di server!');
-        } else {
-          console.error('Gagal menyimpan subscription di server:', await response.text());
-        }
-      }
-    } catch (err) {
-      console.error('Terjadi error saat proses subscription:', err);
+    const permission = await Notification.requestPermission();
+    if (permission === 'granted') {
+      const swRegistration = await navigator.serviceWorker.register('/service-worker.js');
+      const vapidKeyString = import.meta.env.VITE_PUBLIC_VAPID_KEY;
+      if (!vapidKeyString) return;
+      const applicationServerKey = urlBase64ToUint8Array(vapidKeyString);
+      const subscription = await swRegistration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey
+      });
+      await fetch('/api/subscriptions/save', {
+        method: 'POST',
+        body: JSON.stringify(subscription),
+        headers: { 'Content-Type': 'application/json' }
+      });
     }
   }
-
 
   function handleRejectNotification() {
     showNotificationPopup = false;
-    // Simpan waktu penolakan di localStorage
     const rejectionTime = new Date().getTime();
     localStorage.setItem('notification_rejection_timestamp', rejectionTime.toString());
   }
-  // --- SELESAI LOGIKA BARU ---
 
-
-
-   $: if (browser) {
+  $: if (browser) {
     const html = document.documentElement;
     if ($theme === 'dark') {
       html.classList.add('dark');
