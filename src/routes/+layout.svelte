@@ -98,13 +98,6 @@
   // --- SELESAI LOGIKA BARU ---
 
 
-// --- LOGIKA CERDAS UNTUK SEO ---
-  // Pilih judul spesifik dari halaman jika ada, jika tidak, gunakan judul situs
-  $: finalTitle = data.meta?.title || data.settings?.site_title || 'Judul Default';
-  // Pilih deskripsi spesifik dari halaman jika ada, jika tidak, gunakan deskripsi situs
-  $: finalDescription = data.meta?.description || data.settings?.site_description || 'Deskripsi Default';
-  // --- SELESAI LOGIKA ---
-
 
    $: if (browser) {
     const html = document.documentElement;
@@ -160,9 +153,8 @@
   });
 </script>
 
-<svelte:head>
-  <title>{finalTitle}</title>
-  <meta name="description" content={finalDescription} />
+  <svelte:head>
+  <title>{data.settings?.site_title || 'Judul Situs Default'}</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />

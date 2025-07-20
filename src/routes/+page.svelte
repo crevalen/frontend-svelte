@@ -13,7 +13,8 @@
 </script>
 
 <svelte:head>
-  <title>{data.settings?.site_title || ''}</title>
+  <title>{data.settings?.site_title || 'Crevalen'}</title>
+  <meta name="description" content={data.settings?.site_description} />
 </svelte:head>
 
 <div class="container max-w-[1100px] mx-auto px-4 py-8 space-y-16">
