@@ -16,10 +16,17 @@
 <a href={`/${categorySlug}/${post.slug}`} class="block group">
   <div class="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden mb-3">
     <img 
-      src={post.featuredImage?.url || '/default-image.png'} 
-      alt={post.title} 
-      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-    />
+  src={post.featuredImage?.url} 
+  alt={post.title} 
+  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+  srcset={`
+    ${post.featuredImage?.url_thumb} 300w,
+    ${post.featuredImage?.url_medium} 768w,
+    ${post.featuredImage?.url} 1200w
+  `}
+  sizes="(max-width: 768px) 100vw, 768px"
+  loading="lazy"
+/>
   </div>
   
   <h4 class="text-base font-semibold text-gray-800 dark:text-gray-200 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors leading-tight line-clamp-2">

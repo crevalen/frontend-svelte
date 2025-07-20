@@ -7,7 +7,18 @@
 <a href={`/${category?.slug}/${post.slug}`} class="group grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
   <div class="md:order-2">
     <div class="aspect-video overflow-hidden">
-      <img src={post.featuredImage?.url} alt={post.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+      <img 
+  src={post.featuredImage?.url} 
+  alt={post.title} 
+  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+  srcset={`
+    ${post.featuredImage?.url_thumb} 300w,
+    ${post.featuredImage?.url_medium} 768w,
+    ${post.featuredImage?.url} 1200w
+  `}
+  sizes="(max-width: 768px) 100vw, 768px"
+  loading="lazy"
+/>
     </div>
   </div>
   <div class="md:order-1">

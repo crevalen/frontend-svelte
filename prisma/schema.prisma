@@ -32,7 +32,7 @@ model Post {
   id              String     @id @default(cuid())
   slug            String     @unique
   title           String
-  content         String
+  content         String     @db.Text
   published       Boolean    @default(false)
   metaTitle       String?
   metaDescription String?
@@ -47,13 +47,13 @@ model Post {
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
   authorId        String
-  featuredImageId String?    @unique
-  ogImageId       String?    @unique
+  featuredImageId String?    // Dihapus: @unique
+  ogImageId       String?    // Dihapus: @unique
   viewCount       Int        @default(0)
   comments        Comment[]
   author          User       @relation(fields: [authorId], references: [id])
-  featuredImage   Media?     @relation("PostToFeaturedImage", fields: [featuredImageId], references: [id])
-  ogImage         Media?     @relation("PostToOgImage", fields: [ogImageId], references: [id])
+  featuredImage   Media?     @relation("PostFeaturedImage", fields: [featuredImageId], references: [id])
+  ogImage         Media?     @relation("PostOgImage", fields: [ogImageId], references: [id])
   categories      Category[] @relation("CategoryToPost")
   tags            Tag[]      @relation("PostToTag")
 }
@@ -62,7 +62,7 @@ model Category {
   id        String   @id @default(cuid())
   slug      String   @unique
   name      String   @unique
-  updatedAt DateTime @default(now()) @updatedAt
+  updatedAt DateTime @updatedAt // Dihapus: @default(now())
   posts     Post[]   @relation("CategoryToPost")
 }
 
@@ -70,25 +70,29 @@ model Tag {
   id        String   @id @default(cuid())
   slug      String   @unique
   name      String   @unique
-  updatedAt DateTime @default(now()) @updatedAt
+  updatedAt DateTime @updatedAt // Dihapus: @default(now())
   posts     Post[]   @relation("PostToTag")
 }
 
 model Media {
-  id                  String   @id @default(cuid())
-  key                 String   @unique
-  url                 String   @unique
+  id                  String  @id @default(cuid())
+  key                 String  @unique
+  url                 String  @unique
+  url_medium          String?
+  url_thumb           String?
   altText             String?
   fileType            String
   size                Int
   createdAt           DateTime @default(now())
-  PostAsFeaturedImage Post?    @relation("PostToFeaturedImage")
-  PostAsOgImage       Post?    @relation("PostToOgImage")
+  
+  // PERBAIKAN: Ubah Post? menjadi Post[] agar menjadi relasi satu-ke-banyak
+  PostAsFeaturedImage Post[] @relation("PostFeaturedImage")
+  PostAsOgImage       Post[] @relation("PostOgImage")
 }
 
 model Setting {
   key       String   @id
-  value     String
+  value     String   @db.Text // Diubah ke Text agar bisa menampung custom script yang panjang
   updatedAt DateTime @updatedAt
 }
 
@@ -96,7 +100,7 @@ model Page {
   id              String   @id @default(cuid())
   slug            String   @unique
   title           String
-  content         String
+  content         String   @db.Text
   published       Boolean  @default(false)
   metaTitle       String?
   metaDescription String?

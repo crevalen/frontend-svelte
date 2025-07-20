@@ -7,7 +7,18 @@
 <div class="block group bg-white dark:bg-slate-800/50 shadow-sm hover:shadow-lg transition-shadow duration-300 h-full">
   <a href={`/${category?.slug}/${post.slug}`}>
     <div class="aspect-video overflow-hidden">
-      <img src={post.featuredImage?.url} alt={post.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+      <img 
+  src={post.featuredImage?.url} 
+  alt={post.title} 
+  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+  srcset={`
+    ${post.featuredImage?.url_thumb} 300w,
+    ${post.featuredImage?.url_medium} 768w,
+    ${post.featuredImage?.url} 1200w
+  `}
+  sizes="(max-width: 768px) 100vw, 768px"
+  loading="lazy"
+/>
     </div>
   </a>
   <div class="p-3">
