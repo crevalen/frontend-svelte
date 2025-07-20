@@ -20,7 +20,7 @@ import { lazyload } from '$lib/actions/lazyload';
   src={post.featuredImage?.url_placeholder || '/default-image.png'} 
   use:lazyload={post.featuredImage?.url}
   alt={post.title} 
-  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+  class="lazy-image w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
   width="300" height="169"
 />
   </div>

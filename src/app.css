@@ -204,11 +204,17 @@
   }
 }
 
-img {
+.lazy-image {
+  filter: blur(10px);
   transition: filter 0.5s ease-in-out;
-  filter: blur(10px); /* Awalnya buram */
 }
 
-img.loaded {
-  filter: blur(0); /* Menjadi jelas saat sudah dimuat */
+/* Kelas ini akan ditambahkan oleh JavaScript saat gambar selesai dimuat */
+.lazy-image.loaded {
+  filter: blur(0);
+}
+
+/* Pastikan gambar non-lazy load tidak buram sama sekali */
+img:not(.lazy-image) {
+  filter: none;
 }
