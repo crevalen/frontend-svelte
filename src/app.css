@@ -1,0 +1,47 @@
+:root {
+  scroll-behavior: smooth;
+}
+/* 1. Impor Google Fonts (WAJIB DI ATAS SEMUANYA) */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap");
+
+/* 2. Impor dasar-dasar Tailwind */
+@import "tailwindcss";
+
+/* 3. Daftarkan plugin-plugin */
+@plugin "@tailwindcss/typography";
+@plugin "@tailwindcss/aspect-ratio";
+
+/* 4. Definisikan cara kerja dark mode */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* 5. Definisikan tema kustom kita (font dan warna) */
+@theme {
+  /* Variabel Font Baru */
+  --font-sans: "Roboto", sans-serif;
+  --font-serif: "Lora", serif;
+
+  /* Variabel Warna (Foreground diubah menjadi lebih gelap) */
+  --color-background: theme('colors.slate.50');
+  --color-foreground: theme('colors.slate.900'); /* <-- Diubah dari 800 ke 900 (lebih hitam) */
+  --color-card: theme('colors.white');
+  --color-accent: theme('colors.cyan.600');
+  --color-muted: theme('colors.slate.500');
+  --color-border: theme('colors.slate.200');
+}
+
+/* 6. Atur bagaimana variabel berubah saat dark mode aktif */
+@layer theme {
+  :root, :host {
+    @variant dark {
+      --color-background: theme('colors.slate.900');
+      --color-foreground: theme('colors.slate.300');
+      --color-card: theme('colors.slate.800');
+      --color-accent: theme('colors.cyan.400');
+      --color-muted: theme('colors.slate.400');
+      --color-border: theme('colors.slate.700');
+    }
+  }
+}
+
+/* 7. Ciptakan kelas utilitas kustom (TIDAK PERLU LAGI, LIHAT LANGKAH 3) */
+/* Kita akan gunakan kelas Tailwind standar dan membiarkan variabel CSS bekerja */

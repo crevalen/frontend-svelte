@@ -1,0 +1,31 @@
+<script lang="ts">
+  export let url: string;
+  export let title: string;
+
+  const platforms = [
+    { name: 'Facebook', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M14 13.5h2.5l1-4H14v-2c0-1.03 0-2 2-2h1.5V2.14c-.326-.043-1.557-.14-2.857-.14C11.928 2 10 3.657 10 6.7v2.8H7v4h3V22h4z"/></svg>', href: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, color: 'bg-[#1877F2] hover:bg-[#166fe5]' },
+    { name: 'X/Twitter', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26l8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zM17.08 19.54h1.833L7.084 4.126H5.117z"/></svg>', href: `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`, color: 'bg-[#1D1D1D] hover:bg-[#000]' },
+    { name: 'WhatsApp', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M16.75 13.96c.25.13.43.2.5.28.08.08.13.28.1.53-.03.25-.5.7-.7.93-.2.23-.45.28-.73.28-.25 0-.5-.05-.75-.28-.25-.23-1.13-1.05-2.25-2.28-1.03-1.13-1.7-2.28-1.95-2.6-.25-.3-.03-.5.18-.7.2-.2.43-.5.6-.7.15-.18.2-.25.3-.43.08-.15.05-.33 0-.5-.05-.18-.7-1.7-1-2.3-.28-.6-.5-.5-.7-.5-.2 0-.43.05-.6.05-.2 0-.5.23-.7.45-.23.2-.88.85-1.13 1.63-.25.78-.25 1.5.05 2.25.3.75.93 1.63 2.28 2.95 1.7 1.6 2.8 2.15 3.8 2.4 1.03.28 1.83.25 2.45.15.65-.1 1.03-.4 1.18-.78.15-.38.15-.75.1-.95-.05-.2-.18-.38-.4-.53z"/></svg>', href: `https://api.whatsapp.com/send?text=${encodeURIComponent(title + ' ' + url)}`, color: 'bg-[#25D366] hover:bg-[#1ebe57]' },
+    { name: 'LinkedIn', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M6.94 5a2 2 0 1 1-4-.002a2 2 0 0 1 4 .002zM7 8.48H3V21h4V8.48zm6.32 0H9.34V21h3.94v-6.57c0-3.66 4.77-4 4.77 0V21H22v-7.93c0-6.17-7.06-5.94-8.72-2.91z"/></svg>', href: `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(url)}`, color: 'bg-[#0A66C2] hover:bg-[#095ab0]' },
+    { name: 'Threads', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M14.12 2.342c-2.26.263-4.14.86-5.65 2.233C6.73 6.09 6.2 8.35 6.2 11.41v.83c0 .88-.03 1.6-.1 2.13-.07.53-.17.92-.3 1.17-.13.25-.3.4-.5.45-.2.05-.45 0-.75-.15l-.6-.3c-.25-.15-.45-.25-.6-.3l-1.35-.65c-.2-.1-.35-.05-.45.1s-.15.35-.15.55v.9c.1.15.25.25.45.3l1.35.65c.2.1.4.2.6.3l.6.3c.3.15.6.2.9.2.95 0 1.7-.266 2.25-.8.55-.534.82-1.3.82-2.3v-.68c0-.3-.02-.633-.05-1s-.05-.7-.05-1v-1.2c0-2.8.43-4.9 1.3-6.3.87-1.4 2.2-2.1 4-2.1.8 0 1.52.12 2.15.35.63.23 1.17.62 1.6 1.15.43.53.65 1.15.65 1.85s-.22 1.3-.65 1.85c-.43.53-1 .92-1.8 1.15-.7.2-1.5.17-2.4-.1-.9-.27-1.7-.7-2.4-1.25-.7-.55-1.2-1.25-1.5-2.1-.2-.6-.2-1.25-.05-1.95.1-.45.3-.85.55-1.2.25-.35.5-.6.75-.75s.5-.25.75-.25.5.05.75.25c.25.2.5.45.75.75.25.3.45.65.6.95.15.3.2.65.2 1s-.07 1.25-.2 1.85c-.13.6-.35 1.15-.65 1.65-.3.5-.7.9-1.2 1.2-.5.3-1.05.5-1.65.6-.6.1-1.2.1-1.8.05l-1-.1v-2.1c.45.05.88.08 1.3.08.85 0 1.6-.17 2.25-.5.65-.33 1.15-.8 1.5-1.4.35-.6.52-1.3.52-2.1s-.17-1.5-.52-2.1c-.35-.6-.85-1.05-1.5-1.35s-1.4-.45-2.25-.45c-1.55 0-2.8.433-3.75 1.3-1 .867-1.5 2.1-1.5 3.7v1.25c0 .35.02.733.05 1.15.03.417.05.8.05 1.15v.65c0 1.2-.3 2.15-.9 2.85s-1.4.95-2.4.8c-.35-.05-.65-.2-.9-.4L3.8 18.3c-.2-.1-.35-.2-.45-.3l-1.35-.65c-.2-.1-.35-.15-.45-.15-.15 0-.27.05-.35.15s-.15.25-.15.45v.9c.1.15.25.25.45.3l1.35.65c.2.1.4.2.6.3l.6.3c.3.15.6.2.9.2.95 0 1.7-.267 2.25-.8.55-.533.82-1.3.82-2.3v-.68c0-.3-.02-.633-.05-1s-.05-.7-.05-1v-1.2c0-2.8.43-4.9 1.3-6.3.87-1.4 2.2-2.1 4-2.1.8 0 1.52.12 2.15.35.63.23 1.17.62 1.6 1.15.43.53.65 1.15.65 1.85s-.22 1.3-.65 1.85c-.43.53-1 .92-1.8 1.15-.7.2-1.5.17-2.4-.1-.9-.27-1.7-.7-2.4-1.25-.7-.55-1.2-1.25-1.5-2.1-.2-.6-.2-1.25-.05-1.95.1-.45.3-.85.55-1.2.25-.35.5-.6.75-.75s.5-.25.75-.25.5.05.75.25c.25.2.5.45.75.75.25.3.45.65.6.95.15.3.2.65.2 1s-.07 1.25-.2 1.85c-.13.6-.35 1.15-.65 1.65-.3.5-.7.9-1.2 1.2-.5.3-1.05.5-1.65.6-.6.1-1.2.1-1.8.05l-1-.1v-2.1c.45.05.88.08 1.3.08.85 0 1.6-.17 2.25-.5.65-.33 1.15-.8 1.5-1.4.35-.6.52-1.3.52-2.1s-.17-1.5-.52-2.1c-.35-.6-.85-1.05-1.5-1.35s-1.4-.45-2.25-.45c-1.55 0-2.8.433-3.75 1.3-1 .867-1.5 2.1-1.5 3.7v1.25c0 .35.02.733.05 1.15.03.417.05.8.05 1.15v.65c0 1.2-.3 2.15-.9 2.85s-1.4.95-2.4.8z"/></svg>', href: `https://www.threads.net/share?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`, color: 'bg-[#000000] hover:bg-[#222]' },
+    { name: 'Tumblr', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M14.56 21H9.91V13.3H7.5v-3.26h2.41V7.95c0-2.3.96-3.72 3.49-3.72h2.2v3.26h-1.41c-.93 0-1.18.28-1.18.95v1.81h2.83l-.42 3.26h-2.41z"/></svg>', href: `http://www.tumblr.com/share/link?url=${encodeURIComponent(url)}&name=${encodeURIComponent(title)}`, color: 'bg-[#36465D] hover:bg-[#2f3d52]' },
+    { name: 'Flipboard', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M0 0v24h24V0zm22.5 22.5h-21v-21h21zM5.25 5.25h9v13.5h-9zm11.25 0h2.25v2.25h-2.25zm0 4.5h2.25v2.25h-2.25zm0 4.5h2.25v2.25h-2.25z"/></svg>', href: `https://share.flipboard.com/flipit/load?url=${encodeURIComponent(url)}`, color: 'bg-[#E12828] hover:bg-[#c92424]' },
+  ];
+</script>
+
+<div class="flex items-center gap-3">
+  <span class="text-sm font-semibold text-gray-600">Bagikan:</span>
+  <div class="flex items-center space-x-2">
+    {#each platforms as platform}
+      <a 
+        href={platform.href} 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        title="Bagikan ke {platform.name}"
+        class="w-9 h-9 flex items-center justify-center rounded-full text-white transform hover:-translate-y-1 transition-all duration-300 {platform.color}"
+      >
+        <div class="w-5 h-5">{@html platform.icon}</div>
+      </a>
+    {/each}
+  </div>
+</div>
