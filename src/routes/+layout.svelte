@@ -98,7 +98,12 @@
   // --- SELESAI LOGIKA BARU ---
 
 
-$: finalDescription = data.meta?.description || data.settings?.site_description || 'Deskripsi default website.';
+// --- LOGIKA CERDAS UNTUK SEO ---
+  // Pilih judul spesifik dari halaman jika ada, jika tidak, gunakan judul situs
+  $: finalTitle = data.meta?.title || data.settings?.site_title || 'Judul Default';
+  // Pilih deskripsi spesifik dari halaman jika ada, jika tidak, gunakan deskripsi situs
+  $: finalDescription = data.meta?.description || data.settings?.site_description || 'Deskripsi Default';
+  // --- SELESAI LOGIKA ---
 
 
    $: if (browser) {
@@ -156,8 +161,7 @@ $: finalDescription = data.meta?.description || data.settings?.site_description 
 </script>
 
 <svelte:head>
-  <title>{data.settings?.site_title || 'Judul Situs Default'}</title>
-  
+  <title>{finalTitle}</title>
   <meta name="description" content={finalDescription} />
   
   <link rel="preconnect" href="https://fonts.googleapis.com" />
