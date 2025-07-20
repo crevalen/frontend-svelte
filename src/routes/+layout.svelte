@@ -191,8 +191,10 @@ $: finalDescription = data.meta?.description || data.settings?.site_description 
     <Header siteTitle={data.settings?.site_title} siteLogoUrl={data.settings?.site_logo_url} />
   </div>
   <main class="flex-grow">
-    <slot />
-  </main>
+    {#key data.url}
+        <slot />
+    {/key}
+</main>
 
   <Footer />
 </div>
