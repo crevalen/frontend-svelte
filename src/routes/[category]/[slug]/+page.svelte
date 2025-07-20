@@ -25,7 +25,11 @@
 	$: readTime = post.content ? calculateReadTime(post.content) : 0;
   $: popularPosts = data.popularPosts;
 
-  $: combinedSchemaString = (() => {
+  function injectSchema() {
+    if (!browser) return;
+    const schemaScriptTag = document.getElementById('schema-ld-json');
+    if (!schemaScriptTag) return;
+
     const breadcrumbSchema = {
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
@@ -35,13 +39,9 @@
         { '@type': 'ListItem', position: category ? 3 : 2, name: post.title }
       ]
     };
-
-    // Gabungkan skema artikel (jika ada) dan skema breadcrumb ke dalam satu array
     const schemas = [jsonLd, breadcrumbSchema].filter(Boolean);
-    return JSON.stringify(schemas, null, 2);
-  })();
-  // --- SELESAI PERBAIKAN ---
-
+    schemaScriptTag.textContent = JSON.stringify(schemas, null, 2);
+  }
   
 
 
@@ -61,30 +61,24 @@
   let headings: { id: string; text: string; level: 'h2' | 'h3' }[] = [];
   let showToc = false;
 
-  $: if (browser && post.content) {
-    setTimeout(() => {
-      const articleContent = document.querySelector('#article-content');
-      if (!articleContent) return;
+  function generateToc() {
+    if (!browser || !post.content) return;
+    const articleContent = document.querySelector('#article-content');
+    if (!articleContent) return;
 
-      // --- PERBAIKAN LOGIKA PEMINDAI ---
-      // Kita gunakan ':scope >' untuk hanya memindai elemen h2/h3
-      // yang merupakan anak langsung dari #article-content,
-      // mengabaikan yang ada di dalam blok 'Baca Juga'.
-      const headingElements = articleContent.querySelectorAll(':scope > h2, :scope > h3');
-      const newHeadings: typeof headings = [];
-      headingElements.forEach((el, i) => {
-        const text = el.textContent || '';
-        let id = el.id;
-        if (!id) {
-          id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-          el.id = `${id}-${i}`;
-        }
-        newHeadings.push({ id: el.id, text, level: el.nodeName.toLowerCase() as 'h2' | 'h3' });
-      });
-      headings = newHeadings;
-    }, 100);
+    const headingElements = articleContent.querySelectorAll(':scope > h2, :scope > h3');
+    const newHeadings: typeof headings = [];
+    headingElements.forEach((el, i) => {
+      const text = el.textContent || '';
+      let id = el.id;
+      if (!id) {
+        id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        el.id = `${id}-${i}`;
+      }
+      newHeadings.push({ id: el.id, text, level: el.nodeName.toLowerCase() as 'h2' | 'h3' });
+    });
+    headings = newHeadings;
   }
-
   function insertRelatedArticles() {
     const articleContent = document.querySelector('#article-content');
     const inlineRelatedContainer = document.querySelector('#inline-related-container');
@@ -101,7 +95,11 @@
       (inlineRelatedContainer as HTMLElement).style.display = 'block';
     }
   }
-  afterNavigate(insertRelatedArticles);
+   afterNavigate(() => {
+    injectSchema();
+    generateToc();
+    insertRelatedArticles();
+  });
 </script>
 
 <svelte:head>
@@ -121,9 +119,8 @@
   <meta name="twitter:description" content={meta.ogDescription} />
   <meta name="twitter:image" content={meta.ogImage} />
 
-  {#if jsonLd}
-    <script type="application/ld+json">{@html combinedSchemaString}</script>
-  {/if}
+  <script type="application/ld+json" id="schema-ld-json"></script>
+  
 </svelte:head>
 
 <div class="py-8 sm:py-12">
