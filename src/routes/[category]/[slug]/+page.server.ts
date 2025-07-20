@@ -4,7 +4,7 @@ import { PUBLIC_CMS_URL } from '$env/static/public';
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
-export const prerender = true;
+
 
 export const load: PageServerLoad = async ({ fetch, params, setHeaders }) => {
 	// Atur header cache
