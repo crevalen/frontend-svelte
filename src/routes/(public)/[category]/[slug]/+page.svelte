@@ -91,6 +91,8 @@
       ],
     };
     const schemas = [jsonLd, breadcrumbSchema].filter(Boolean);
+    const safeSchemaString = JSON.stringify([jsonLd, breadcrumbSchema].filter(Boolean))
+  .replace(/</g, '\\u003c'); // mencegah <script injection
     return JSON.stringify(schemas).replace(/</g, '\\u003c');
   }
 
@@ -98,9 +100,6 @@
 </script>
 
 <svelte:head>
-  {#if safeSchemaString}
-    <script type="application/ld+json">{@html safeSchemaString}</script>
-  {/if}
   <title>{meta.title}</title>
   <meta name="description" content={meta.description} />
   <link rel="canonical" href={meta.canonical} />
@@ -117,10 +116,10 @@
   <meta name="twitter:description" content={meta.ogDescription} />
   <meta name="twitter:image" content={meta.ogImage} />
 
-  <script type="application/ld+json" id="schema-ld-json"></script>
-  
-</svelte:head>
 
+{@html `<script type="application/ld+json">${safeSchemaString}</script>`}
+
+</svelte:head>
 <div class="py-8 sm:py-12">
   <div class="container max-w-[1100px] mx-auto px-4 grid grid-cols-1 lg:grid-cols-3 lg:gap-x-12">
     
