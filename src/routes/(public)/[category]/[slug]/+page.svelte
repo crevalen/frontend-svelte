@@ -15,18 +15,19 @@
 
  export let data: PageData;
 
-	// Sekarang semua data ada di level atas, tidak lagi di dalam 'postData'
-	$: post = data.post;
-	$: meta = data.meta;
-	$: jsonLd = data.jsonLd;
-	$: comments = data.comments;
-	$: relatedPosts = data.relatedPosts;
-  $: category = post?.categories?.[0];
-	$: readTime = post.content ? calculateReadTime(post.content) : 0;
-  $: popularPosts = data.popularPosts;
+	  // Variabel Reaktif
+  $: ({ post, meta, jsonLd, comments, relatedPosts, popularPosts } = data);
+  $: readTime = post.content ? calculateReadTime(post.content) : 0;
+  $: category = post.categories?.[0];
 
-  
-    
+  // State UI
+  let headings: { id: string; text: string; level: 'h2' | 'h3' }[] = [];
+  let showToc = false;
+
+  // --- FUNGSI UTAMA UNTUK SEMUA LOGIKA CLIENT-SIDE ---
+  function runClientSideLogic() {
+    if (!browser) return; // Pengaman ekstra
+
     // 1. Injeksi Skema JSON-LD
     const schemaScriptTag = document.getElementById('schema-ld-json');
     if (schemaScriptTag) {
@@ -43,17 +44,8 @@
       schemaScriptTag.textContent = JSON.stringify(schemas, null, 2);
     }
 
-
-
-
- // State & Logika Daftar Isi
-  let headings: { id: string; text: string; level: 'h2' | 'h3' }[] = [];
-  let showToc = false;
-
-  function runClientSideLogic() {
-    if (!browser) return;
-
-  const articleContent = document.querySelector('#article-content');
+    // 2. Generate Daftar Isi
+    const articleContent = document.querySelector('#article-content');
     if (articleContent) {
       const headingElements = articleContent.querySelectorAll(':scope > h2, :scope > h3');
       const newHeadings: typeof headings = [];
@@ -69,7 +61,8 @@
       headings = newHeadings;
     }
     
-  const inlineRelatedContainer = document.querySelector('#inline-related-container');
+    // 3. Sisipkan 'Baca Juga'
+    const inlineRelatedContainer = document.querySelector('#inline-related-container');
     if (inlineRelatedContainer && articleContent) {
         if(inlineRelatedContainer.parentElement !== document.body) {
             document.body.appendChild(inlineRelatedContainer);
@@ -83,20 +76,24 @@
     }
   }
 
-   onMount(() => {
-    // View Counter
+  // Jalankan fungsi di atas saat halaman pertama kali dimuat
+  onMount(() => {
+    runClientSideLogic();
+    
+    // Logika View Counter (hanya berjalan sekali)
     const timer = setTimeout(() => {
       fetch(`/api/posts/${post.slug}/view`, { method: 'POST' });
     }, 5000);
     
-    runClientSideLogic();
-
     return () => clearTimeout(timer);
   });
+
+  // Jalankan kembali fungsi saat bernavigasi dari artikel lain
   afterNavigate(runClientSideLogic);
 </script>
 
 <svelte:head>
+  <script type="application/ld+json" id="schema-ld-json"></script>
   <title>{meta.title}</title>
   <meta name="description" content={meta.description} />
   <link rel="canonical" href={meta.canonical} />
