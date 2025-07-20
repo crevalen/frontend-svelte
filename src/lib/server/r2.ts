@@ -21,20 +21,19 @@ export async function uploadImage(file: File, altText?: string) {
 	const originalName = file.name.substring(0, file.name.lastIndexOf('.'));
 	const keyPrefix = `${Date.now()}-${originalName.replace(/[^a-zA-Z0-9-]/g, '-')}`;
 
-	// Definisikan ukuran-ukuran yang kita inginkan
 	const sizes = {
 		large: { width: 1200, key: `${keyPrefix}-large.webp` },
 		medium: { width: 768, key: `${keyPrefix}-medium.webp` },
-		thumb: { width: 300, key: `${keyPrefix}-thumb.webp` }
+		thumb: { width: 300, key: `${keyPrefix}-thumb.webp` },
+		placeholder: { width: 20, key: `${keyPrefix}-placeholder.webp` } // <-- Ukuran baru
 	};
 
 	try {
-		// Proses dan unggah semua ukuran secara paralel untuk efisiensi
 		await Promise.all(
 			Object.values(sizes).map(async (sizeInfo) => {
 				const resizedBuffer = await sharp(imageBuffer)
-					.resize({ width: sizeInfo.width, withoutEnlargement: true }) // Resize gambar
-					.webp({ quality: 80 }) // Konversi ke WebP dengan kualitas 80%
+					.resize({ width: sizeInfo.width, withoutEnlargement: true })
+					.webp({ quality: sizeInfo.key.includes('placeholder') ? 20 : 80 }) // <-- Kualitas rendah untuk placeholder
 					.toBuffer();
 
 				const command = new PutObjectCommand({
@@ -50,13 +49,14 @@ export async function uploadImage(file: File, altText?: string) {
 		// Simpan semua URL ke dalam satu record di database
 		const newMedia = await db.media.create({
 			data: {
-				key: keyPrefix, // Simpan key prefix sebagai referensi utama
+				key: keyPrefix,
 				url: `${PUBLIC_R2_URL}/${sizes.large.key}`,
 				url_medium: `${PUBLIC_R2_URL}/${sizes.medium.key}`,
 				url_thumb: `${PUBLIC_R2_URL}/${sizes.thumb.key}`,
-				size: file.size, // Ukuran file asli untuk referensi
+				url_placeholder: `${PUBLIC_R2_URL}/${sizes.placeholder.key}`, // <-- Simpan URL baru
+				size: file.size,
 				fileType: 'image/webp',
-				altText: altText && altText.length > 0 ? altText : originalName
+				altText: altText || originalName
 			}
 		});
 

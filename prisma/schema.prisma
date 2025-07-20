@@ -80,6 +80,7 @@ model Media {
   url                 String  @unique
   url_medium          String?
   url_thumb           String?
+  url_placeholder     String?
   altText             String?
   fileType            String
   size                Int
