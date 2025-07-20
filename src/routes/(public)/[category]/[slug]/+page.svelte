@@ -162,8 +162,7 @@
         {#if post.featuredImage}<figure class="my-6"><img 
   src={post.featuredImage.url} 
   alt={post.title} 
-  class="w-full h-auto object-cover" 
-  srcset={`
+  class="w-full h-auto object-cover loaded" srcset={`
     ${post.featuredImage.url_thumb} 300w,
     ${post.featuredImage.url_medium} 768w,
     ${post.featuredImage.url} 1200w
@@ -171,6 +170,7 @@
   sizes="(max-width: 1100px) 100vw, 1100px"
   loading="eager"
   fetchpriority="high"
+  width="1200" height="675"
 /></figure>{/if}
         {#if headings.length > 1}
   <div class="my-8 border border-gray-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 rounded-lg overflow-hidden">

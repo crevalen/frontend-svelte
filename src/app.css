@@ -204,5 +204,11 @@
   }
 }
 
-/* 7. Ciptakan kelas utilitas kustom (TIDAK PERLU LAGI, LIHAT LANGKAH 3) */
-/* Kita akan gunakan kelas Tailwind standar dan membiarkan variabel CSS bekerja */
+img {
+  transition: filter 0.5s ease-in-out;
+  filter: blur(10px); /* Awalnya buram */
+}
+
+img.loaded {
+  filter: blur(0); /* Menjadi jelas saat sudah dimuat */
+}

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { formatDate } from '$lib/utils/formatters';
+import { lazyload } from '$lib/actions/lazyload';
   export let post: any;
   const category = post.categories?.[0];
 </script>
@@ -8,16 +9,11 @@
   <a href={`/${category?.slug}/${post.slug}`} class="block">
     <div class="aspect-w-16 aspect-h-9">
       <img 
-  src={post.featuredImage?.url} 
+  src={post.featuredImage?.url_placeholder || '/default-image.png'} 
+  use:lazyload={post.featuredImage?.url}
   alt={post.title} 
   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-  srcset={`
-    ${post.featuredImage?.url_thumb} 300w,
-    ${post.featuredImage?.url_medium} 768w,
-    ${post.featuredImage?.url} 1200w
-  `}
-  sizes="(max-width: 768px) 100vw, 768px"
-  loading="lazy"
+  width="300" height="169"
 />
     </div>
   </a>
