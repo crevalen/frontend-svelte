@@ -25,36 +25,26 @@
 	$: readTime = post.content ? calculateReadTime(post.content) : 0;
   $: popularPosts = data.popularPosts;
 
+  $: combinedSchemaString = (() => {
+    const breadcrumbSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Beranda', item: PUBLIC_SITE_URL },
+        ...(category ? [{ '@type': 'ListItem', position: 2, name: category.name, item: `${PUBLIC_SITE_URL}/kategori/${category.slug}`}] : []),
+        { '@type': 'ListItem', position: category ? 3 : 2, name: post.title }
+      ]
+    };
+
+    // Gabungkan skema artikel (jika ada) dan skema breadcrumb ke dalam satu array
+    const schemas = [jsonLd, breadcrumbSchema].filter(Boolean);
+    return JSON.stringify(schemas, null, 2);
+  })();
+  // --- SELESAI PERBAIKAN ---
+
   
 
- // --- PERBAIKAN: Membuat satu array untuk semua schema ---
-	let schemas: any[] = [];
-	$: {
-		const breadcrumbSchema = {
-			'@context': 'https://schema.org',
-			'@type': 'BreadcrumbList',
-			itemListElement: [
-				{ '@type': 'ListItem', position: 1, name: 'Beranda', item: PUBLIC_SITE_URL },
-				...(category
-					? [{
-							'@type': 'ListItem',
-							position: 2,
-							name: category.name,
-							item: `${PUBLIC_SITE_URL}/kategori/${category.slug}`
-					  }]
-					: []),
-				{
-					'@type': 'ListItem',
-					position: category ? 3 : 2,
-					name: post.title
-				}
-			]
-		};
 
-		// Gabungkan schema postingan dan schema breadcrumb ke dalam satu array
-		schemas = [jsonLd, breadcrumbSchema];
-	}
-	// ----------------------------------------------------
 
 	// Logika untuk view count
 	onMount(() => {
@@ -132,15 +122,7 @@
   <meta name="twitter:image" content={meta.ogImage} />
 
   {#if jsonLd}
-    <script type="application/ld+json">
-      {JSON.stringify(jsonLd, null, 2)}
-    </script>
- 
- <script type="application/ld+json">
-    {JSON.stringify(breadcrumbSchema, null, 2)}
-  </script>
-
-
+    <script type="application/ld+json">{@html combinedSchemaString}</script>
   {/if}
 </svelte:head>
 
