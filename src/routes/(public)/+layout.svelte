@@ -95,7 +95,30 @@
     lastScrollY = currentScrollY;
   }
 
-  onMount(() => {
+   onMount(() => {
+    // --- PERBAIKAN LOGIKA GOOGLE ANALYTICS DI SINI ---
+    // Tunda pemuatan GA selama 3 detik setelah halaman interaktif
+    setTimeout(() => {
+      if (browser && data.settings?.ga4_id) {
+        const ga4Id = data.settings.ga4_id;
+        
+        const script = document.createElement('script');
+        script.async = true;
+        // Gunakan ID dinamis dari CMS
+        script.src = `https://www.googletagmanager.com/gtag/js?id=${ga4Id}`;
+        document.head.appendChild(script);
+
+        window.dataLayer = window.dataLayer || [];
+        function gtag(...args: any[]) {
+          window.dataLayer.push(arguments);
+        }
+        
+        gtag('js', new Date());
+        // Gunakan ID dinamis dari CMS
+        gtag('config', ga4Id);
+      }
+    }, 3000);
+    // --- SELESAI PERBAIKAN ---
     if (browser && 'Notification' in window && Notification.permission === 'default') {
       const rejectionTimestamp = localStorage.getItem('notification_rejection_timestamp');
       if (rejectionTimestamp) {
@@ -131,15 +154,6 @@
   {#if data.settings?.bing_verification_code}<meta name="msvalidate.01" content={data.settings.bing_verification_code} />{/if}
   {#if data.settings?.yandex_verification_code}<meta name="yandex-verification" content={data.settings.yandex_verification_code} />{/if}
 
-  {#if browser && data.settings?.ga4_id}
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-LXGKK2J43E"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-LXGKK2J43E');
-    </script>
-  {/if}
 
   {#if data.settings?.custom_head_script}{@html data.settings.custom_head_script}{/if}
 </svelte:head>

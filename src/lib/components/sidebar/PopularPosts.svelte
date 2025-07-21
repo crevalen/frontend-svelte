@@ -1,5 +1,6 @@
 <script lang="ts">
   import { formatDate } from '$lib/utils/formatters';
+  import { lazyload } from '$lib/actions/lazyload';
   export let posts: any[] = [];
 </script>
 
@@ -19,7 +20,13 @@
           <div class="flex items-start gap-4">
             <div class="text-xl font-bold text-gray-300 dark:text-slate-600 pt-1">{i + 1}.</div>
             
-            <img src={post.featuredImage?.url} alt={post.title} class="w-16 h-16 object-cover flex-shrink-0" />
+           <img 
+  src={post.featuredImage?.url_placeholder || '/default-image.png'} 
+  use:lazyload={post.featuredImage?.url}
+  alt={post.title} 
+  class="lazy-image w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+  width="300" height="169"
+/>
 
             <div class="flex-grow">
               <a href={`/${category.slug}/${post.slug}`} class="block text-base font-bold text-gray-800 dark:text-gray-200 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors leading-tight">

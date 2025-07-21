@@ -1,4 +1,9 @@
 declare global {
+  // --- Deklarasi untuk Google Analytics ---
+  interface Window {
+    dataLayer: any[];
+  }
+  // --- Selesai Deklarasi ---
   namespace App {
 
     interface Locals {

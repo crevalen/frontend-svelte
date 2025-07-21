@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { lazyload } from "$lib/actions/lazyload";
+
   export let posts: any[] = [];
 </script>
 
@@ -14,10 +16,12 @@
         <li>
           <a href={`/${category?.slug || 'artikel'}/${post.slug}`} class="flex items-center group gap-4 p-2 rounded-md hover:bg-slate-100 transition-colors">
             <img 
-              src={post.featuredImage?.url || '/default-image.png'} 
-              alt={post.title} 
-              class="w-16 h-16 object-cover rounded-md flex-shrink-0" 
-            />
+  src={post.featuredImage?.url_placeholder || '/default-image.png'} 
+  use:lazyload={post.featuredImage?.url}
+  alt={post.title} 
+  class="lazy-image w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+  width="300" height="169"
+/>
             <span class="font-semibold text-gray-700 group-hover:text-cyan-600 text-base">
               {post.title}
             </span>
