@@ -1,7 +1,7 @@
 // src/routes/admin/settings/general/+page.server.ts
 
 import { db } from '$lib/server/db';
-import { uploadImage } from '$lib/server/r2';
+import { uploadImage } from '$lib/server/blob';
 import type { Actions, PageServerLoad } from './$types';
 
 // Daftar semua kunci pengaturan yang akan kita kelola di halaman ini

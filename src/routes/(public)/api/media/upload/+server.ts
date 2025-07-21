@@ -1,5 +1,5 @@
 // src/routes/api/media/upload/+server.ts
-import { uploadImage } from '$lib/server/r2';
+import { uploadImage } from '$lib/server/blob';
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 

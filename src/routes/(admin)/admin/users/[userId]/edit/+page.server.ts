@@ -5,7 +5,7 @@ import { error, fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { Role, Prisma } from '@prisma/client';
 import { hashPassword } from '$lib/server/auth';
-import { uploadImage } from '$lib/server/r2';
+import { uploadImage } from '$lib/server/blob';
 
 export const load: PageServerLoad = async ({ params }) => {
 	const user = await db.user.findUnique({

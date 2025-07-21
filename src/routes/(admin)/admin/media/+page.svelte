@@ -2,7 +2,7 @@
 	import type { PageData, ActionData } from './$types';
 	import { Image, UploadCloud, Trash2, Pencil, X, HardDrive } from 'lucide-svelte';
 	import { enhance } from '$app/forms';
-	import { PUBLIC_R2_URL } from '$env/static/public';
+	
 
 	export let data: PageData;
 	export let form: ActionData;

@@ -5,7 +5,7 @@ import { error, fail, } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { Prisma } from '@prisma/client';
 
-import { uploadImage } from '$lib/server/r2';
+import { uploadImage } from '$lib/server/blob';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const post = await db.post.findUnique({

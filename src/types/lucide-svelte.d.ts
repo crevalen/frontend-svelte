@@ -52,4 +52,5 @@ declare module 'lucide-svelte' {
 	export class Link extends SvelteComponent {}
 	export class YoutubeIcon extends SvelteComponent {}
 	export class Youtube extends SvelteComponent {}
+	export class UploadCloud extends SvelteComponent {}
 }
