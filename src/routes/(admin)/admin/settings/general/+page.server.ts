@@ -3,6 +3,7 @@
 import { db } from '$lib/server/db';
 import { uploadImage } from '$lib/server/blob';
 import type { Actions, PageServerLoad } from './$types';
+import { revalidateFrontendPath } from '$lib/server/revalidate';
 
 // Daftar semua kunci pengaturan yang akan kita kelola di halaman ini
 const settingKeys = [
@@ -70,6 +71,12 @@ export const actions: Actions = {
 
 		try {
 			await db.$transaction(settingOps);
+
+			// --- TAMBAHAN BARU DI SINI ---
+			// 2. Panggil revalidate setelah berhasil menyimpan
+			await revalidateFrontendPath('/');
+			// --- SELESAI TAMBAHAN ---
+
 		} catch {
 			return { success: false, message: 'Gagal menyimpan pengaturan.' };
 		}

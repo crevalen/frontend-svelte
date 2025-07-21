@@ -4,6 +4,7 @@ import { db } from '$lib/server/db';
 import { uploadImage } from '$lib/server/blob';
 import { Prisma } from '@prisma/client';
 import { sendNotificationToAll } from '$lib/server/notifications';
+import { revalidateFrontendPath } from '$lib/server/revalidate';
 
 export const load: PageServerLoad = async () => {
 	const allCategories = await db.category.findMany({ orderBy: { name: 'asc' } });
@@ -19,7 +20,7 @@ export const actions: Actions = {
 		const title = formData.get('title') as string;
 		const slug = formData.get('slug') as string;
 		const content = formData.get('content') as string;
-		const published = formData.get('published') === 'on'; // <-- PERBAIKAN DI SINI
+		const published = formData.get('published') === 'on';
 		const publishedAtString = formData.get('publishedAt') as string;
 		const metaTitle = formData.get('metaTitle') as string;
 		const metaDescription = formData.get('metaDescription') as string;
@@ -50,22 +51,28 @@ export const actions: Actions = {
 				data: {
 					title, slug, content, metaTitle, metaDescription, focusKeyword,
 					published,
-					publishedAt: publishedAtString ? new Date(publishedAtString) : new Date(),
+					// ## PERBAIKAN 1: Logika publishedAt yang lebih akurat ##
+					publishedAt: published ? (publishedAtString ? new Date(publishedAtString) : new Date()) : null,
 					authorId: locals.user.id,
 					featuredImageId: featuredImageId,
 					categories: { connectOrCreate: categoryConnectOrCreate },
 					tags: { connectOrCreate: tagConnectOrCreate }
 				},
-				// Sertakan data relasi yang dibutuhkan oleh fungsi notifikasi
 				include: {
 					featuredImage: true,
 					categories: true
 				}
 			});
 
-			// 3. Panggil fungsi untuk mengirim notifikasi jika post di-publish
 			if (newPost.published) {
 				await sendNotificationToAll(newPost);
+				
+				// ## PERBAIKAN 2: Revalidasi yang lebih lengkap ##
+				await Promise.all([
+					revalidateFrontendPath('/'), // Revalidasi Homepage
+					revalidateFrontendPath(`/kategori/${newPost.categories[0]?.slug}`), // Revalidasi halaman kategori
+					revalidateFrontendPath(`/${newPost.categories[0]?.slug}/${newPost.slug}`) // Revalidasi halaman post itu sendiri
+				]);
 			}
 
 		} catch (e) {
@@ -74,6 +81,8 @@ export const actions: Actions = {
 			}
 			return fail(500, { error: 'Gagal menyimpan postingan.' });
 		}
-		throw redirect(302, `/admin/posts`);
+		
+		// ## PERBAIKAN 3: Menggunakan 'return redirect' yang lebih aman ##
+		return redirect(302, `/admin/posts`);
 	}
 };

@@ -3,6 +3,7 @@
 import { db } from '$lib/server/db';
 import type { Actions, PageServerLoad } from './$types';
 import type { Setting } from '@prisma/client';
+import { revalidateFrontendPath } from '$lib/server/revalidate';
 
 const settingKeys = ['site_title', 'site_description', 'post_title_template','publisher_name',
 	'publisher_logo_url'];
@@ -42,10 +43,15 @@ export const actions: Actions = {
 
 		try {
 			await db.$transaction(settingsToUpdate);
+		// --- TAMBAHAN BARU DI SINI ---
+			// 2. Panggil revalidate setelah berhasil menyimpan
+			await revalidateFrontendPath('/');
+			// --- SELESAI TAMBAHAN ---
+
 		} catch {
 			return { success: false, message: 'Gagal menyimpan pengaturan.' };
 		}
 
-		return { success: true, message: 'Pengaturan SEO berhasil disimpan!' };
+		return { success: true, message: 'Pengaturan umum berhasil disimpan!' };
 	}
 };

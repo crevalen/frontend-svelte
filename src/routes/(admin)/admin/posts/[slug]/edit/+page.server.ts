@@ -1,10 +1,8 @@
-// src/routes/admin/posts/[slug]/edit/+page.server.ts
-
 import { db } from '$lib/server/db';
-import { error, fail, } from '@sveltejs/kit';
+import { error, fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { Prisma } from '@prisma/client';
-
+import { revalidateFrontendPath } from '$lib/server/revalidate';
 import { uploadImage } from '$lib/server/blob';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
@@ -20,16 +18,12 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const allTags = await db.tag.findMany({ orderBy: { name: 'asc' } });
 
 	return {
-		// PERBAIKAN: Menggunakan 'as any' untuk melewati pemeriksaan tipe yang salah
-		// dan memastikan kita bisa mengakses URL gambar yang sudah di-load.
 		post: {
 			...post,
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			featuredImageUrl: (post as any).featuredImage?.url
 		},
 		allCategories,
 		allTags
-		
 	};
 };
 
@@ -55,7 +49,6 @@ export const actions: Actions = {
 		const noIndex = formData.get('noIndex') === 'on';
 		const noFollow = formData.get('noFollow') === 'on';
 		const ogImageFile = formData.get('ogImage') as File;
-
 
 		if (!title) return fail(400, { error: 'Judul tidak valid.' });
 		if (!newSlug || !/^[a-z0-9-]+$/.test(newSlug)) return fail(400, { error: 'Slug tidak valid.' });
@@ -89,14 +82,45 @@ export const actions: Actions = {
 			}
 
 			if (ogImageFile?.size > 0) {
-    const newOgImage = await uploadImage(ogImageFile);
-    dataToUpdate.ogImage = { connect: { id: newOgImage.id } };
-}
+				const newOgImage = await uploadImage(ogImageFile);
+				dataToUpdate.ogImage = { connect: { id: newOgImage.id } };
+			}
 
-			await db.post.update({
+			const updatedPost = await db.post.update({
 				where: { slug: oldSlug, authorId: locals.user?.id },
-				data: dataToUpdate
+				data: dataToUpdate,
+				include: {
+					categories: true // Kita butuh ini untuk revalidasi
+				}
 			});
+
+			// --- LOGIKA REVALIDASI YANG SUDAH DISEMPURNAKAN ---
+			const pathsToRevalidate = new Set<string>();
+			pathsToRevalidate.add('/'); // 1. Selalu revalidasi homepage
+
+			// 2. Revalidasi semua halaman kategori (future-proof untuk multi-kategori)
+			if (updatedPost.categories) {
+				updatedPost.categories.forEach(cat => {
+					pathsToRevalidate.add(`/kategori/${cat.slug}`);
+				});
+			}
+
+			// 3. Revalidasi path artikel yang baru
+			if (updatedPost.categories && updatedPost.categories[0]) {
+				pathsToRevalidate.add(`/${updatedPost.categories[0].slug}/${updatedPost.slug}`);
+			}
+			
+			// 4. Revalidasi path artikel yang LAMA jika slug berubah
+			if (oldSlug !== newSlug && updatedPost.categories && updatedPost.categories[0]) {
+				pathsToRevalidate.add(`/${updatedPost.categories[0].slug}/${oldSlug}`);
+			}
+			
+			// 5. Jalankan semua revalidasi secara efisien
+			await Promise.all(
+				Array.from(pathsToRevalidate).map(path => revalidateFrontendPath(path))
+			);
+			// --- SELESAI ---
+
 		} catch (e) {
 			console.error(e);
 			if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
@@ -105,7 +129,6 @@ export const actions: Actions = {
 			return fail(500, { error: 'Gagal memperbarui postingan.', success: false });
 		}
 		
-		// Mengembalikan pesan sukses untuk notifikasi
 		return { success: true, message: 'Postingan berhasil diperbarui!' };
 	}
 };
