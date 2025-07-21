@@ -212,18 +212,24 @@
         </div>
         
         {#if relatedPosts && relatedPosts.length > 0}
-          <div>
-            <div class="text-center mb-8">
-              <h3 class="text-3xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">Artikel Terkait Lainnya</h3>
-              <div class="mt-2 h-1 w-16 bg-cyan-500 mx-auto"></div>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
-              {#each relatedPosts as related}
-                <SmallPostCard post={related} />
-              {/each}
-            </div>
-          </div>
-        {/if}
+  <div class="mt-16">
+    <div class="relative text-center mb-8">
+      <div class="absolute inset-0 flex items-center" aria-hidden="true">
+        <div class="w-full border-t border-gray-200 dark:border-slate-700"></div>
+      </div>
+      <div class="relative flex justify-center">
+        <h3 class="bg-slate-50 dark:bg-slate-900 px-4 text-2xl font-bold text-gray-800 dark:text-gray-200 tracking-tight">
+          Artikel Terkait Lainnya
+        </h3>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
+      {#each relatedPosts as related}
+        <SmallPostCard post={related} />
+      {/each}
+    </div>
+  </div>
+{/if}
       </div>
       <div class="mt-12">
         <CommentsSection initialComments={comments} postSlug={post.slug} />
