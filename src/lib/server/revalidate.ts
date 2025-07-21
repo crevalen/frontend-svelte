@@ -1,4 +1,5 @@
-import { REVALIDATE_TOKEN, PUBLIC_FRONTEND_URL } from '$env/static/private';
+import { PUBLIC_FRONTEND_URL } from '$env/static/public'; 
+import { REVALIDATE_TOKEN } from '$env/static/private';
 
 export async function revalidateFrontendPath(path: string) {
   if (!PUBLIC_FRONTEND_URL) {
