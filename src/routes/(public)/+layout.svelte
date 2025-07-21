@@ -7,9 +7,9 @@
   import 'nprogress/nprogress.css';
   import type { PageData } from './$types';
   import { theme } from '$lib/stores/theme';
-  
+
   import "../../app.css";
- 
+
   import TopHeader from '$lib/sections/TopHeader.svelte';
   import Header from "$lib/sections/Header.svelte";
   import Footer from "$lib/sections/Footer.svelte";
@@ -17,43 +17,35 @@
   import CookieBanner from '$lib/components/ui/CookieBanner.svelte';
   import NotificationPopup from '$lib/components/ui/NotificationPopup.svelte'; 
   import { urlBase64ToUint8Array } from '$lib/utils/formatters';
-  
-  
- 
 
-  
   export let data: PageData;
 
-
-  // --- LOGIKA BARU UNTUK COOKIE BANNER ---
   let showCookieBanner = false;
   let lastScrollY = 0;
   let showHeader = true;
+  let showNotificationPopup = false;
 
   function handleAcceptCookies() {
     showCookieBanner = false;
     localStorage.setItem('cookie_consent', 'true');
   }
-  // --- SELESAI LOGIKA BARU ---
 
-   // --- LOGIKA BARU UNTUK POPUP NOTIFIKASI ---
-  let showNotificationPopup = false;
-
-    async function handleAcceptNotification() {
+  async function handleAcceptNotification() {
     showNotificationPopup = false;
-    if (!browser || !('Notification' in window) || !('serviceWorker' in navigator)) {
-      return;
-    }
+    if (!browser || !('Notification' in window) || !('serviceWorker' in navigator)) return;
+
     const permission = await Notification.requestPermission();
     if (permission === 'granted') {
       const swRegistration = await navigator.serviceWorker.register('/service-worker.js');
       const vapidKeyString = import.meta.env.VITE_PUBLIC_VAPID_KEY;
       if (!vapidKeyString) return;
+
       const applicationServerKey = urlBase64ToUint8Array(vapidKeyString);
       const subscription = await swRegistration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey
       });
+
       await fetch('/api/subscriptions/save', {
         method: 'POST',
         body: JSON.stringify(subscription),
@@ -62,14 +54,13 @@
     }
   }
 
-  
-
   function handleRejectNotification() {
     showNotificationPopup = false;
     const rejectionTime = new Date().getTime();
     localStorage.setItem('notification_rejection_timestamp', rejectionTime.toString());
   }
 
+  // Theme toggler
   $: if (browser) {
     const html = document.documentElement;
     if ($theme === 'dark') {
@@ -78,15 +69,21 @@
       html.classList.remove('dark');
     }
   }
-NProgress.configure({ showSpinner: false });
+
+  // NProgress loading config
+  NProgress.configure({ showSpinner: false });
+
   beforeNavigate(() => {
     NProgress.start();
-    showHeader = true; // Paksa header terlihat sebelum navigasi
+    // Biarkan header seperti kondisi sebelumnya (jangan paksa muncul)
   });
+
   afterNavigate(() => {
     NProgress.done();
+    // Scroll ke atas dengan smooth agar tidak lompat kasar
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   });
-  
+
   function handleScroll() {
     if (!browser) return;
     const currentScrollY = window.scrollY;
@@ -99,28 +96,25 @@ NProgress.configure({ showSpinner: false });
   }
 
   onMount(() => {
-
     if (browser && 'Notification' in window && Notification.permission === 'default') {
       const rejectionTimestamp = localStorage.getItem('notification_rejection_timestamp');
       if (rejectionTimestamp) {
         const oneDayInMillis = 24 * 60 * 60 * 1000;
         const timeSinceRejection = new Date().getTime() - Number(rejectionTimestamp);
-        // Tampilkan lagi jika sudah lebih dari 24 jam
-        if (timeSinceRejection > oneDayInMillis) {
-          showNotificationPopup = true;
-        }
+        if (timeSinceRejection > oneDayInMillis) showNotificationPopup = true;
       } else {
-        // Tampilkan jika belum pernah menolak sama sekali
         showNotificationPopup = true;
       }
     }
 
-     if (!localStorage.getItem('cookie_consent')) {
+    if (!localStorage.getItem('cookie_consent')) {
       showCookieBanner = true;
     }
+
     if (browser) {
       window.addEventListener('scroll', handleScroll, { passive: true });
     }
+
     return () => {
       if (browser) {
         window.removeEventListener('scroll', handleScroll);
@@ -129,24 +123,24 @@ NProgress.configure({ showSpinner: false });
   });
 </script>
 
-  <svelte:head>
+<svelte:head>
   <title>{data.settings?.site_title || 'Judul Situs Default'}</title>
   <meta name="google-site-verification" content="nVnoX2VqJN1VEotoKyNBB1WHBUdK86IANmecOn95yXs" />
-
   {#if data.settings?.site_favicon_url}<link rel="icon" href={data.settings.site_favicon_url} />{/if}
   {#if data.settings?.gsc_verification_code}<meta name="google-site-verification" content={data.settings.gsc_verification_code} />{/if}
   {#if data.settings?.bing_verification_code}<meta name="msvalidate.01" content={data.settings.bing_verification_code} />{/if}
   {#if data.settings?.yandex_verification_code}<meta name="yandex-verification" content={data.settings.yandex_verification_code} />{/if}
+
   {#if browser && data.settings?.ga4_id}
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-LXGKK2J43E"></script>
-   <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-LXGKK2J43E');
-</script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LXGKK2J43E');
+    </script>
   {/if}
+
   {#if data.settings?.custom_head_script}{@html data.settings.custom_head_script}{/if}
 </svelte:head>
 
@@ -157,14 +151,13 @@ NProgress.configure({ showSpinner: false });
 {/if}
 
 <div class="min-h-screen bg-slate-50 dark:bg-slate-900 flex flex-col font-sans">
-  <div class="sticky top-0 z-40 transition-transform duration-300" class:-translate-y-full={!showHeader}>
+  <div class="sticky top-0 z-40 transition-opacity duration-300" class:opacity-0={!showHeader} class:pointer-events-none={!showHeader}>
     <Header siteTitle={data.settings?.site_title} siteLogoUrl={data.settings?.site_logo_url} />
   </div>
+
   <main class="flex-grow">
-    
-        <slot />
-    
-</main>
+    <slot />
+  </main>
 
   <Footer />
 </div>

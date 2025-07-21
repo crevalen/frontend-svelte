@@ -1,12 +1,10 @@
-import { put } from '@vercel/blob';
+import { put, del } from '@vercel/blob'; // <-- Impor fungsi 'del'
 import { db } from './db';
 import sharp from 'sharp';
 
 /**
- * Mengunggah gambar ke Vercel Blob, membuat 3 ukuran (large, medium, thumb),
- * mengonversinya ke format WebP, dan menyimpan semua URL ke database.
- * @param file File gambar yang akan diunggah
- * @param altText Teks alternatif untuk gambar
+ * Mengunggah gambar ke Vercel Blob, membuat berbagai ukuran,
+ * dan menyimpannya ke database.
  */
 export async function uploadImage(file: File, altText?: string) {
 	const imageBuffer = Buffer.from(await file.arrayBuffer());
@@ -16,32 +14,28 @@ export async function uploadImage(file: File, altText?: string) {
 	const sizes = {
 		large: { width: 1200, quality: 80, key: `${keyPrefix}-large.webp` },
 		medium: { width: 768, quality: 75, key: `${keyPrefix}-medium.webp` },
-		thumb: { width: 300, quality: 70, key: `${keyPrefix}-thumb.webp` }
+		thumb: { width: 300, quality: 70, key: `${keyPrefix}-thumb.webp` },
+		placeholder: { width: 20, quality: 20, key: `${keyPrefix}-placeholder.webp` }
 	};
 
 	try {
-		// Proses dan unggah semua ukuran secara paralel
-		const [largeBlob, mediumBlob, thumbBlob] = await Promise.all(
+		const [largeBlob, mediumBlob, thumbBlob, placeholderBlob] = await Promise.all(
 			Object.values(sizes).map(async (sizeInfo) => {
 				const resizedBuffer = await sharp(imageBuffer)
 					.resize({ width: sizeInfo.width, withoutEnlargement: true })
 					.webp({ quality: sizeInfo.quality })
 					.toBuffer();
-
-				return put(sizeInfo.key, resizedBuffer, {
-					access: 'public',
-					contentType: 'image/webp'
-				});
+				return put(sizeInfo.key, resizedBuffer, { access: 'public', contentType: 'image/webp' });
 			})
 		);
 
-		// Simpan semua URL dari hasil upload ke database
 		const newMedia = await db.media.create({
 			data: {
 				key: keyPrefix,
 				url: largeBlob.url,
 				url_medium: mediumBlob.url,
 				url_thumb: thumbBlob.url,
+				url_placeholder: placeholderBlob.url,
 				size: file.size,
 				fileType: 'image/webp',
 				altText: altText || originalName
@@ -55,4 +49,23 @@ export async function uploadImage(file: File, altText?: string) {
 	}
 }
 
-// Anda bisa menambahkan fungsi deleteImage di sini nanti jika perlu
+/**
+ * Menghapus semua ukuran gambar yang terkait dengan satu key dari Vercel Blob.
+ * @param keyPrefix - Key dasar dari media (tanpa suffix -large.webp, dll.)
+ */
+export async function deleteImage(keyPrefix: string) {
+	const urlsToDelete = [
+		`${keyPrefix}-large.webp`,
+		`${keyPrefix}-medium.webp`,
+		`${keyPrefix}-thumb.webp`,
+		`${keyPrefix}-placeholder.webp`
+	];
+
+	try {
+		await del(urlsToDelete); // Hapus semua file sekaligus
+		return { success: true };
+	} catch (err) {
+		console.error("Image deletion from Vercel Blob failed:", err);
+		throw new Error('Gagal menghapus file dari Vercel Blob.');
+	}
+}

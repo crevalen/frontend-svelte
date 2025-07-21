@@ -2,12 +2,8 @@ import { fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { db } from '$lib/server/db';
 
-// --- PERUBAHAN UTAMA DI SINI ---
-// Impor fungsi upload dari file Vercel Blob yang baru
-import { uploadImage } from '$lib/server/blob'; 
-// Impor fungsi delete lama (jika masih diperlukan untuk file lama)
-import { deleteImage as deleteImageFromR2 } from '$lib/server/r2'; 
-// --- SELESAI PERUBAHAN ---
+// --- PERBAIKAN: Impor uploadImage dan deleteImage dari blob.ts ---
+import { uploadImage, deleteImage } from '$lib/server/blob'; 
 
 export const load: PageServerLoad = async () => {
     const media = await db.media.findMany({
@@ -20,14 +16,12 @@ export const actions: Actions = {
     uploadFile: async ({ request }) => {
         const formData = await request.formData();
         const image = formData.get('image') as File;
-        // Ambil alt text saat upload
         const altText = formData.get('altText') as string;
 
         if (!image || image.size === 0) {
             return fail(400, { success: false, message: 'Silakan pilih file untuk di-upload.' });
         }
         try {
-            // Panggil fungsi uploadImage yang baru dengan altText
             await uploadImage(image, altText);
         } catch {
             return fail(500, { success: false, message: 'Gagal meng-upload gambar.' });
@@ -56,10 +50,9 @@ export const actions: Actions = {
 
         if (!id || !key) return fail(400, { success: false, message: 'ID atau Key file tidak valid.' });
         try {
-            // Catatan: Fungsi deleteImage saat ini masih mengarah ke R2.
-            // Anda perlu membuat fungsi delete baru untuk Vercel Blob jika ingin menghapus file yang diunggah ke sana.
+            // Panggil deleteImage dari blob.ts, lalu hapus dari DB
             await Promise.all([
-                deleteImageFromR2(key), // Hati-hati, ini untuk file lama di R2
+                deleteImage(key), 
                 db.media.delete({ where: { id } })
             ]);
         } catch {
