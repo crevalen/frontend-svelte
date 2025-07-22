@@ -1,7 +1,7 @@
 import { db } from '$lib/server/db';
 import { error, fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { Prisma } from '@prisma/client';
+import { Prisma, SchemaType } from '@prisma/client';
 import { revalidateFrontendPath } from '$lib/server/revalidate';
 import { uploadImage } from '$lib/server/blob';
 
@@ -23,7 +23,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			featuredImageUrl: (post as any).featuredImage?.url
 		},
 		allCategories,
-		allTags
+		allTags,
+	        schemaTypes: Object.values(SchemaType)
 	};
 };
 

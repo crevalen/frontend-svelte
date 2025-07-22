@@ -9,10 +9,10 @@
 	<main class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
 		<h1 class="mb-8 text-3xl font-bold text-slate-100">Tulis Postingan Baru</h1>
 		<PostForm
-			allCategories={data.allCategories}
-			allTags={data.allTags}
-			
-			{form}
-		/>
-	</main>
+            allCategories={data.allCategories}
+            allTags={data.allTags}
+            schemaTypes={data.schemaTypes}
+            {form}
+        />
+    </main>
 </div>

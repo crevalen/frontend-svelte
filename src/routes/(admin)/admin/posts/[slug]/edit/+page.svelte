@@ -28,6 +28,7 @@
 			noFollow={data.post.noFollow}
 			
 			schemaType={data.post.schemaType ?? 'BlogPosting'}
+            		schemaTypes={data.schemaTypes}
 			
 			{form}
 		/>

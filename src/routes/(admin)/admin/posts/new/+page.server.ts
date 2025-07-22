@@ -2,14 +2,18 @@ import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
 import { uploadImage } from '$lib/server/blob';
-import { Prisma } from '@prisma/client';
+import { Prisma, SchemaType } from '@prisma/client';
 import { sendNotificationToAll } from '$lib/server/notifications';
 import { revalidateFrontendPath } from '$lib/server/revalidate';
 
 export const load: PageServerLoad = async () => {
 	const allCategories = await db.category.findMany({ orderBy: { name: 'asc' } });
 	const allTags = await db.tag.findMany({ orderBy: { name: 'asc' } });
-	return { allCategories, allTags };
+	return {
+        allCategories,
+        allTags,
+        schemaTypes: Object.values(SchemaType) // <-- Kirim daftar tipe skema
+    };
 };
 
 export const actions: Actions = {
