@@ -8,6 +8,7 @@
 	export let content: string = '';
 	export let published = false;
 	export let schemaType = 'WebPage';
+	export let schemaTypes: string[] = [];
 	export let form: { error?: string } | null = null;
 </script>
 
@@ -100,12 +101,10 @@
 							bind:value={schemaType}
 							class="w-full rounded-lg border-slate-700 bg-slate-900 p-3 text-sm text-slate-200 focus:border-blue-500 focus:ring-blue-500"
 						>
-							<option value="WebPage">Web Page (Default)</option>
-							<option value="AboutPage">About Page</option>
-							<option value="ContactPage">Contact Page</option>
-							<option value="PrivacyPolicyPage">Privacy Policy Page</option>
-							<option value="TermsOfServicePage">Terms of Service Page</option>
-						</select>
+							{#each schemaTypes as type}
+            <option value={type}>{type}</option>
+        {/each}
+    </select>
 					</div>
 				</div>
 			</div>

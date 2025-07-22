@@ -42,7 +42,7 @@ model Post {
   canonicalUrl    String?
   noIndex         Boolean    @default(false)
   noFollow        Boolean    @default(false)
-  schemaType      String?
+  schemaType      SchemaType?  @default(BlogPosting)
   publishedAt     DateTime?
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
@@ -105,7 +105,7 @@ model Page {
   published       Boolean  @default(false)
   metaTitle       String?
   metaDescription String?
-  schemaType      String?
+  schemaType      PageSchemaType? @default(WebPage)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
@@ -136,4 +136,19 @@ model PushSubscription {
   p256dh    String
   auth      String
   createdAt DateTime @default(now())
+}
+
+enum SchemaType {
+  BlogPosting
+  Article
+  NewsArticle
+  FAQPage
+}
+
+enum PageSchemaType {
+  WebPage
+  AboutPage
+  ContactPage
+  PrivacyPolicyPage
+  TermsOfServicePage
 }

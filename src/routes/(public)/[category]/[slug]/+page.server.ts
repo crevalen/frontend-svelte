@@ -4,26 +4,47 @@ import { db } from '$lib/server/db';
 import { marked } from 'marked';
 import { PUBLIC_SITE_URL } from '$env/static/public';
 
-// Anda bisa pindahkan interface ini ke file app.d.ts agar lebih rapi
-interface JsonLdSchema {
-	'@context': string;
-	'@type': string;
-	headline: string;
-	description: string;
-	image?: string;
-	datePublished: string;
-	dateModified: string;
-	author: { '@type': 'Person'; name: string };
-	publisher: { '@type': 'Organization'; name: string; logo: { '@type': 'ImageObject'; url: string } };
-	mainEntityOfPage: { '@type': 'WebPage'; '@id': string };
-	mainEntity?: {
-		'@type': 'Question';
-		name: string;
-		acceptedAnswer: {
-			'@type': 'Answer';
-			text: string;
-		};
-	}[];
+function buildSchema(post: any, meta: any, settingsMap: any, contentHtml: string) {
+    const finalUrl = meta.canonical;
+    const baseSchema = {
+        '@context': 'https://schema.org',
+        '@type': post.schemaType || 'BlogPosting',
+        headline: meta.ogTitle,
+        description: meta.ogDescription,
+        image: meta.ogImage,
+        datePublished: post.createdAt.toISOString(),
+        dateModified: post.updatedAt.toISOString(),
+        author: { '@type': 'Person', name: post.author.displayName || post.author.username },
+        publisher: {
+            '@type': 'Organization',
+            name: settingsMap.publisher_name || settingsMap.site_title,
+            logo: { '@type': 'ImageObject', url: settingsMap.publisher_logo_url || '' }
+        },
+        mainEntityOfPage: { '@type': 'WebPage', '@id': finalUrl }
+    };
+
+    switch (baseSchema['@type']) {
+        case 'NewsArticle':
+            return { ...baseSchema, /* tambahkan field khusus NewsArticle jika perlu */ };
+        case 'Article':
+            return { ...baseSchema, articleBody: contentHtml.replace(/<[^>]*>/g, '') };
+        case 'FAQPage':
+            const faqPairs = contentHtml.match(/<h2>(.*?)<\/h2>([\s\S]*?)(?=(<h2>|$))/g) || [];
+            return {
+                ...baseSchema,
+                mainEntity: faqPairs.map((pair) => {
+                    const questionMatch = pair.match(/<h2>(.*?)<\/h2>/);
+                    const answerMatch = pair.replace(/<h2>.*?<\/h2>/, '').trim();
+                    return {
+                        '@type': 'Question',
+                        name: questionMatch ? questionMatch[1] : '',
+                        acceptedAnswer: { '@type': 'Answer', text: answerMatch.replace(/<[^>]*>/g, '') }
+                    };
+                })
+            };
+        default:
+            return baseSchema;
+    }
 }
 
 export const load: PageServerLoad = async ({ params, setHeaders }) => {
@@ -79,35 +100,7 @@ export const load: PageServerLoad = async ({ params, setHeaders }) => {
         };
 
         const schemaType = post.schemaType || 'BlogPosting';
-        const jsonLd: JsonLdSchema = {
-            '@context': 'https://schema.org',
-            '@type': schemaType,
-            headline: post.metaTitle || post.title,
-            description: finalDescription,
-            image: post.featuredImage?.url || '',
-            datePublished: post.createdAt.toISOString(),
-            dateModified: post.updatedAt.toISOString(),
-            author: { '@type': 'Person', name: post.author.displayName || post.author.username },
-            publisher: {
-                '@type': 'Organization',
-                name: settingsMap.publisher_name || siteTitle,
-                logo: { '@type': 'ImageObject', url: settingsMap.publisher_logo_url || '' }
-            },
-            mainEntityOfPage: { '@type': 'WebPage', '@id': finalUrl }
-        };
-
-        if (schemaType === 'FAQPage') {
-            const faqPairs = contentHtml.match(/<h2>(.*?)<\/h2>([\s\S]*?)(?=(<h2>|$))/g) || [];
-            jsonLd.mainEntity = faqPairs.map((pair) => {
-                const questionMatch = pair.match(/<h2>(.*?)<\/h2>/);
-                const answerMatch = pair.replace(/<h2>.*?<\/h2>/, '').trim();
-                return {
-                    '@type': 'Question',
-                    name: questionMatch ? questionMatch[1] : '',
-                    acceptedAnswer: { '@type': 'Answer', text: answerMatch.replace(/<[^>]*>/g, '') }
-                };
-            });
-        }
+        const jsonLd = buildSchema(post, meta, settingsMap, contentHtml);
         
         // 4. Return Semua Data dalam Satu Objek
         return {

@@ -15,17 +15,20 @@
 			published={data.post.published}
 			metaTitle={data.post.metaTitle ?? ''}
 			metaDescription={data.post.metaDescription ?? ''}
+			focusKeyword={data.post.focusKeyword ?? ''}
 			allCategories={data.allCategories}
 			allTags={data.allTags}
 			selectedCategories={data.post.categories}
 			selectedTags={data.post.tags}
-			
 			existingImageUrl={data.post.featuredImageUrl}
 			ogTitle={data.post.ogTitle ?? ''}
-    		ogDescription={data.post.ogDescription ?? ''}
-    		canonicalUrl={data.post.canonicalUrl ?? ''}
-    		noIndex={data.post.noIndex}
-    		noFollow={data.post.noFollow}
+			ogDescription={data.post.ogDescription ?? ''}
+			canonicalUrl={data.post.canonicalUrl ?? ''}
+			noIndex={data.post.noIndex}
+			noFollow={data.post.noFollow}
+			
+			schemaType={data.post.schemaType ?? 'BlogPosting'}
+			
 			{form}
 		/>
 	</main>

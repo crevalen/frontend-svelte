@@ -19,6 +19,7 @@
 	export let noIndex = false;
 	export let noFollow = false;
 	export let schemaType = 'BlogPosting';
+  	export let schemaTypes: string[] = [];
 	// svelte-ignore export_let_unused
 		export let selectedOgImage: { id: string, url: string } | null = null;
 	export let content: string = '';
@@ -256,10 +257,9 @@
 		<div>
     <label for="schemaType" class="mb-2 block text-sm font-medium text-slate-400">Tipe Schema</label>
     <select id="schemaType" name="schemaType" bind:value={schemaType} class="w-full rounded-lg border-slate-700 bg-slate-900 p-3 text-sm text-slate-200 focus:border-blue-500 focus:ring-blue-500">
-        <option value="BlogPosting">Blog Posting (Default)</option>
-        <option value="Article">Article</option>
-        <option value="NewsArticle">News Article</option>
-        <option value="FAQPage">FAQ Page</option>
+        {#each schemaTypes as type}
+            <option value={type}>{type}</option>
+        {/each}
     </select>
     <p class="mt-1 text-xs text-slate-500">Pilih tipe konten yang paling sesuai untuk schema JSON-LD.</p>
 </div>
