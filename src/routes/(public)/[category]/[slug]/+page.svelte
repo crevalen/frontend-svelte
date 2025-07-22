@@ -142,10 +142,12 @@
         <h1 class="text-3xl md:text-4xl font-extrabold leading-tight tracking-tighter text-gray-900 dark:text-gray-100 mb-6">{post.title}</h1>
 
         <div class="flex flex-wrap items-center text-gray-600 dark:text-gray-400 text-sm mb-6 border-y border-gray-200 dark:border-gray-700 py-3 gap-x-4 gap-y-2">
-          <div class="flex items-center gap-2">
-            <img src={post.author.avatarUrl || '/default-avatar.png'} alt={post.author.displayName} class="w-8 h-8 rounded-full" />
-            <span class="font-semibold text-gray-800 dark:text-gray-200">{post.author.displayName}</span>
-          </div>
+          <a href={`/penulis/${post.author.username}`} class="flex items-center gap-2 group">
+        <img src={post.author.avatarUrl || '/default-avatar.png'} alt={post.author.displayName} class="w-8 h-8 rounded-full" />
+        <span class="font-semibold text-gray-800 dark:text-gray-200 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
+      {post.author.displayName}
+      </span>
+          </a>
            <div class="flex items-center gap-4">
             <span class="hidden sm:inline">•</span>
             {#if post.publishedAt}
