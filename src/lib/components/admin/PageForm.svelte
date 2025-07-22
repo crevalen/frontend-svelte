@@ -7,8 +7,8 @@
 	export let metaDescription = '';
 	export let content: string = '';
 	export let published = false;
-	export let schemaType = 'WebPage';
-	export let schemaTypes: string[] = [];
+	export let schemaType: string = 'WebPage';
+  	export let schemaTypes: string[] = [];
 	export let form: { error?: string } | null = null;
 </script>
 
@@ -95,16 +95,16 @@
 					</div>
 					<div>
 						<label for="schemaType" class="mb-2 block text-sm font-medium text-slate-400">Tipe Schema</label>
-						<select
-							id="schemaType"
-							name="schemaType"
-							bind:value={schemaType}
-							class="w-full rounded-lg border-slate-700 bg-slate-900 p-3 text-sm text-slate-200 focus:border-blue-500 focus:ring-blue-500"
-						>
-							{#each schemaTypes as type}
-            <option value={type}>{type}</option>
-        {/each}
-    </select>
+                <select
+                    id="schemaType"
+                    name="schemaType"
+                    bind:value={schemaType}
+                    class="w-full rounded-lg border-slate-700 bg-slate-900 p-3 text-sm text-slate-200 focus:border-blue-500 focus:ring-blue-500"
+                >
+                    {#each schemaTypes as type}
+                        <option value={type}>{type}</option>
+                    {/each}
+                </select>
 					</div>
 				</div>
 			</div>

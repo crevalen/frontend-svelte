@@ -1,19 +1,23 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
-import { Prisma } from '@prisma/client';
+import { Prisma, PageSchemaType } from '@prisma/client'; 
+import { revalidateFrontendPath } from '$lib/server/revalidate'; 
 
-// Tidak ada lagi yang perlu di-load untuk halaman baru
 export const load: PageServerLoad = async () => {
-	return {};
+	// 3. Kirim daftar tipe skema ke form
+	return {
+		schemaTypes: Object.values(PageSchemaType)
+	};
 };
 
 export const actions: Actions = {
 	default: async ({ request }) => {
 		const formData = await request.formData();
-		const data = Object.fromEntries(formData) as Record<string, string>;
+		const data = Object.fromEntries(formData) as Record<string, any>; // Gunakan 'any' untuk checkbox
+
 		try {
-			await db.page.create({
+			const newPage = await db.page.create({
 				data: {
 					title: data.title,
 					slug: data.slug,
@@ -21,15 +25,24 @@ export const actions: Actions = {
 					published: data.published === 'on',
 					metaTitle: data.metaTitle,
 					metaDescription: data.metaDescription,
-					schemaType: data.schemaType
+					// 4. Pastikan schemaType dikonversi ke enum yang benar
+					schemaType: data.schemaType as PageSchemaType
 				}
 			});
+
+			// 5. Picu revalidate jika halaman dipublikasikan
+			if (newPage.published) {
+				await revalidateFrontendPath(`/p/${newPage.slug}`);
+			}
+
 		} catch (e) {
 			if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
 				return fail(400, { error: `Slug "${data.slug}" sudah digunakan.` });
 			}
 			return fail(500, { error: 'Gagal menyimpan halaman.' });
 		}
-		throw redirect(302, `/admin/pages`);
+		
+		// 6. Gunakan 'return redirect' yang lebih aman
+		return redirect(302, `/admin/pages`);
 	}
 };
