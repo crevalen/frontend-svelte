@@ -3,49 +3,8 @@ import type { PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
 import { marked } from 'marked';
 import { PUBLIC_SITE_URL } from '$env/static/public';
+import { buildSchema } from '$lib/server/schema-builder';
 
-function buildSchema(post: any, meta: any, settingsMap: any, contentHtml: string) {
-    const finalUrl = meta.canonical;
-    const baseSchema = {
-        '@context': 'https://schema.org',
-        '@type': post.schemaType || 'BlogPosting',
-        headline: meta.ogTitle,
-        description: meta.ogDescription,
-        image: meta.ogImage,
-        datePublished: post.createdAt.toISOString(),
-        dateModified: post.updatedAt.toISOString(),
-        author: { '@type': 'Person', name: post.author.displayName || post.author.username },
-        publisher: {
-            '@type': 'Organization',
-            name: settingsMap.publisher_name || settingsMap.site_title,
-            logo: { '@type': 'ImageObject', url: settingsMap.publisher_logo_url || '' }
-        },
-        mainEntityOfPage: { '@type': 'WebPage', '@id': finalUrl }
-    };
-
-    switch (baseSchema['@type']) {
-        case 'NewsArticle':
-            return { ...baseSchema, /* tambahkan field khusus NewsArticle jika perlu */ };
-        case 'Article':
-            return { ...baseSchema, articleBody: contentHtml.replace(/<[^>]*>/g, '') };
-        case 'FAQPage':
-            const faqPairs = contentHtml.match(/<h2>(.*?)<\/h2>([\s\S]*?)(?=(<h2>|$))/g) || [];
-            return {
-                ...baseSchema,
-                mainEntity: faqPairs.map((pair) => {
-                    const questionMatch = pair.match(/<h2>(.*?)<\/h2>/);
-                    const answerMatch = pair.replace(/<h2>.*?<\/h2>/, '').trim();
-                    return {
-                        '@type': 'Question',
-                        name: questionMatch ? questionMatch[1] : '',
-                        acceptedAnswer: { '@type': 'Answer', text: answerMatch.replace(/<[^>]*>/g, '') }
-                    };
-                })
-            };
-        default:
-            return baseSchema;
-    }
-}
 
 export const load: PageServerLoad = async ({ params, setHeaders }) => {
     setHeaders({ 'Cache-Control': 'public, max-age=0, s-maxage=300' });
