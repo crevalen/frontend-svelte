@@ -16,5 +16,7 @@
 		metaTitle={data.page.metaTitle ?? ''}
 		metaDescription={data.page.metaDescription ?? ''}
 		schemaType={data.page.schemaType ?? 'WebPage'}
+
+                schemaTypes={data.schemaTypes}
 	/>
 </main>
