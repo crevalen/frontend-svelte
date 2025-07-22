@@ -53,6 +53,6 @@ export const actions: Actions = {
 			return { success: false, message: 'Gagal menyimpan pengaturan.' };
 		}
 
-		return redirect(302, `/admin/settings/seo`);
+		return redirect(302, `/admin/settings`);
 	}
 };

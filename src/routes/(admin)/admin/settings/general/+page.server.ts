@@ -82,6 +82,6 @@ export const actions: Actions = {
 			return { success: false, message: 'Gagal menyimpan pengaturan.' };
 		}
 
-		return redirect(302, `/admin/settings/general`);
+		return redirect(302, `/admin/settings`);
 	}
 };
