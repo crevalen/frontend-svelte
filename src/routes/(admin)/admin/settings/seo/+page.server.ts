@@ -1,6 +1,7 @@
 // src/routes/admin/settings/seo/+page.server.ts
 
 import { db } from '$lib/server/db';
+import { error, fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import type { Setting } from '@prisma/client';
 import { revalidateFrontendPath } from '$lib/server/revalidate';
@@ -52,6 +53,6 @@ export const actions: Actions = {
 			return { success: false, message: 'Gagal menyimpan pengaturan.' };
 		}
 
-		return { success: true, message: 'Pengaturan umum berhasil disimpan!' };
+		return redirect(302, `/admin/settings/seo`);
 	}
 };

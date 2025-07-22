@@ -1,5 +1,5 @@
 import { db } from '$lib/server/db';
-import { error, fail } from '@sveltejs/kit';
+import { error, fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { Prisma, SchemaType } from '@prisma/client';
 import { revalidateFrontendPath } from '$lib/server/revalidate';
@@ -130,6 +130,6 @@ export const actions: Actions = {
 			return fail(500, { error: 'Gagal memperbarui postingan.', success: false });
 		}
 		
-		return { success: true, message: 'Postingan berhasil diperbarui!' };
+		throw redirect(302, `/admin/posts/${newSlug}/edit`);
 	}
 };

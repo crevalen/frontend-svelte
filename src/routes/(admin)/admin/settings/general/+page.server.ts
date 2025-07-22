@@ -1,6 +1,7 @@
 // src/routes/admin/settings/general/+page.server.ts
 
 import { db } from '$lib/server/db';
+import { error, fail, redirect } from '@sveltejs/kit'; 
 import { uploadImage } from '$lib/server/blob';
 import type { Actions, PageServerLoad } from './$types';
 import { revalidateFrontendPath } from '$lib/server/revalidate';
@@ -81,6 +82,6 @@ export const actions: Actions = {
 			return { success: false, message: 'Gagal menyimpan pengaturan.' };
 		}
 
-		return { success: true, message: 'Pengaturan umum berhasil disimpan!' };
+		return redirect(302, `/admin/settings/general`);
 	}
 };

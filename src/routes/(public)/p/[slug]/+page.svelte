@@ -1,12 +1,12 @@
 <script lang="ts">
   import type { PageData } from './$types';
 
-  export let data: PageData;
+ export let data: PageData;
   $: page = data.page;
   $: meta = data.meta;
   $: jsonLd = data.jsonLd;
 
-  // Mengamankan string JSON-LD untuk SSR
+  
   $: safeSchemaString = jsonLd ? JSON.stringify(jsonLd).replace(/</g, '\\u003c') : '';
 </script>
 
@@ -20,9 +20,7 @@
   <meta property="og:url" content={meta.canonical} />
   <meta property="og:type" content="website" />
 
-  {#if safeSchemaString}
-    <script type="application/ld+json">{@html safeSchemaString}</script>
-  {/if}
+  {@html `<script type="application/ld+json">${safeSchemaString}</script>`}
 </svelte:head>
 
 <div class="container max-w-4xl mx-auto px-4 py-16 sm:py-20">
