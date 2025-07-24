@@ -1,38 +1,56 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { LayoutDashboard, Newspaper, Tags, Image, Users, Settings, Bot, FileText, MessageSquare, Palette } from 'lucide-svelte';
+
+	// 1. Impor komponen <Icon> untuk menampilkan ikon
+	import { Icon } from '@steeze-ui/svelte-icon';
+	import { fade } from 'svelte/transition';
+
+	// 2. Impor definisi ikon yang kita butuhkan dari @steeze-ui/heroicons
+	import {
+		ChartBarSquare,
+		Newspaper,
+		DocumentText,
+		ChatBubbleLeftRight,
+		Tag,
+		Users,
+		Photo,
+		Cog6Tooth,
+		PaintBrush,
+		CodeBracketSquare
+	} from '@steeze-ui/heroicons';
 
 	const navLinks = [
-		{ href: '/admin', label: 'Dasbor', icon: LayoutDashboard },
+		{ href: '/admin', label: 'Dasbor', icon: ChartBarSquare },
 		{ href: '/admin/posts', label: 'Postingan', icon: Newspaper },
-		{ href: '/admin/pages', label: 'Halaman', icon: FileText },
-		{ href: '/admin/comments', label: 'Komentar', icon: MessageSquare },
-		{ href: '/admin/taxonomies', label: 'Kategori & Tag', icon: Tags },
+		{ href: '/admin/pages', label: 'Halaman', icon: DocumentText },
+		{ href: '/admin/comments', label: 'Komentar', icon: ChatBubbleLeftRight },
+		{ href: '/admin/taxonomies', label: 'Kategori & Tag', icon: Tag },
 		{ href: '/admin/users', label: 'Pengguna', icon: Users },
-		{ href: '/admin/media', label: 'Media', icon: Image },
-		{ href: '/admin/settings/seo', label: 'Pengaturan SEO', icon: Settings },
-		{ href: '/admin/settings/general', label: 'Pengaturan Umum', icon: Palette },
-		{ href: '/admin/settings/robots', label: 'Robots.txt', icon: Bot }
+		{ href: '/admin/media', label: 'Media', icon: Photo },
+		{ href: '/admin/settings/seo', label: 'Pengaturan SEO', icon: Cog6Tooth },
+		{ href: '/admin/settings/general', label: 'Pengaturan Umum', icon: PaintBrush },
+		{ href: '/admin/settings/robots', label: 'Robots.txt', icon: CodeBracketSquare }
 	];
 </script>
 
-<div class="flex min-h-screen bg-slate-900 text-slate-300">
-	<aside class="sticky top-0 h-screen w-64 flex-shrink-0 border-r border-slate-800 bg-slate-900 p-4">
+<div class="flex min-h-screen bg-slate-50 text-slate-900">
+	<aside class="sticky top-0 h-screen w-64 flex-shrink-0 border-r border-slate-50 bg-slate-50 p-4">
 		<div class="mb-8 text-center">
-			<a href="/admin" class="text-2xl font-bold text-white">
-				My<span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">CMS</span>
+			<a href="/admin" class="text-2xl font-bold text-slate-900">
+				My<span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600">CMS</span>
 			</a>
 		</div>
 		<nav class="flex flex-col gap-2">
 			{#each navLinks as link}
-				{@const isActive = $page.url.pathname === link.href || ($page.url.pathname.startsWith(link.href) && link.href !== '/admin')}
+				{@const isActive = $page.url.pathname === link.href ||
+($page.url.pathname.startsWith(link.href) && link.href !== '/admin')}
 				<a
 					href={link.href}
 					class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors {isActive
-						? 'bg-blue-500/10 text-white'
-						: 'hover:bg-slate-800'}"
+						? 'bg-blue-500 text-slate-50'
+						: 'text-slate-900 hover:bg-blue-500 hover:text-slate-50'}"
 				>
-					<svelte:component this={link.icon} size={18} />
+					<Icon src={link.icon} theme="outline" class="h-5 w-5" />
 					<span>{link.label}</span>
 				</a>
 			{/each}
@@ -40,6 +58,10 @@
 	</aside>
 
 	<div class="flex-grow p-4 sm:p-6 lg:p-8">
-		<slot />
+		{#key $page.url.pathname}
+			<div in:fade={{ duration: 200, delay: 200 }} out:fade={{ duration: 200 }}>
+				<slot />
+			</div>
+		{/key}
 	</div>
 </div>

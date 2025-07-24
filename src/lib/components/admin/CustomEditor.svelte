@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import { Editor } from '@tiptap/core';
+	import LinkEditor from './LinkEditor.svelte';
 	import StarterKit from '@tiptap/starter-kit';
 	import Link from '@tiptap/extension-link';
 	import ImageExtension from '@tiptap/extension-image';
@@ -36,6 +37,8 @@
 	let element: HTMLElement;
 	let bubbleMenuElement: HTMLElement;
 	let editor: Editor;
+	let showLinkEditor = false;
+	let currentLinkAttrs = { href: '', target: '' };
 
 	// PERBAIKAN: Gunakan objek reaktif untuk melacak status tombol
 	let activeState = {
@@ -101,16 +104,38 @@
 		if (editor) editor.destroy();
 	});
 
-	const setLink = () => {
-		const url = window.prompt('URL', editor.getAttributes('link').href);
-		if (url === null) return;
-		if (url === '') {
-			editor.chain().focus().extendMarkRange('link').unsetLink().run();
-			return;
+	// 3. Fungsi untuk MEMBUKA modal, bukan window.prompt
+	function openLinkEditor() {
+		const attrs = editor.getAttributes('link');
+		currentLinkAttrs = { href: attrs.href, target: attrs.target };
+		showLinkEditor = true;
+	}
+
+	// 4. Fungsi untuk MENYIMPAN link dari data modal
+	function handleSaveLink(event: CustomEvent) {
+		const { href, target } = event.detail;
+		if (href) {
+			editor.chain().focus().extendMarkRange('link').setLink({ href, target }).run();
 		}
-		editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
-	};
+		showLinkEditor = false;
+	}
+
+	// 5. Fungsi untuk MENGHAPUS link
+	function handleRemoveLink() {
+		editor.chain().focus().extendMarkRange('link').unsetLink().run();
+		showLinkEditor = false;
+	}
 </script>
+
+{#if showLinkEditor}
+	<LinkEditor
+		href={currentLinkAttrs.href}
+		target={currentLinkAttrs.target}
+		on:save={handleSaveLink}
+		on:remove={handleRemoveLink}
+		on:close={() => (showLinkEditor = false)}
+	/>
+{/if}
 
 <div bind:this={bubbleMenuElement}>
 	{#if editor && editor.isActive('link')}
@@ -123,14 +148,14 @@
 			>
 			<!-- svelte-ignore element_invalid_self_closing_tag -->
 			<div class="h-4 w-px bg-slate-700" />
-			<button on:click={setLink} class="text-sm text-slate-300 hover:text-white">Edit</button>
+			<button on:click={openLinkEditor} class="text-sm text-slate-300 hover:text-white">Edit</button>
 		</div>
 	{/if}
 </div>
 
-<div class="rounded-lg border border-slate-700 bg-slate-900">
+<div class="rounded-lg border border-slate-900 bg-slate-50">
 	{#if editor}
-		<div class="flex flex-wrap items-center gap-1 border-b border-slate-700 p-2">
+		<div class="flex flex-wrap items-center gap-1 border-b border-slate-900 p-2">
 			<div class="flex items-center gap-1">
 				<button
 					type="button"
@@ -217,7 +242,7 @@
 			<!-- svelte-ignore element_invalid_self_closing_tag -->
 			<div class="divider" />
 			<div class="flex items-center gap-1">
-				<button type="button" on:click={setLink} class:is-active={activeState.link}><Link2 size={18} /></button
+				<button type="button" on:click={openLinkEditor} class:is-active={activeState.link}><Link2 size={18} /></button
 				>
 				<button type="button"><ImageIcon size={18} /></button>
 				<button type="button" on:click={() => editor.chain().focus().setHorizontalRule().run()}
@@ -239,7 +264,7 @@
 	.editor-content :global(.ProseMirror) {
 		min-height: 400px;
 		padding: 0.75rem;
-		color: hsl(215 20.2% 65.1%);
+		color: hsl(0, 0%, 4%);
 		transition: all 0.2s;
 	}
 	.editor-content :global(.ProseMirror:focus) {
@@ -252,24 +277,24 @@
 		font-size: 1.5em;
 		font-weight: 700;
 		line-height: 1.3;
-		color: hsl(210 40% 98%);
+		color: hsl(0, 0%, 1%);
 	}
 	.editor-content :global(.ProseMirror h3) {
 		font-size: 1.25em;
 		font-weight: 700;
 		line-height: 1.3;
-		color: hsl(210 40% 98%);
+		color: hsl(0, 0%, 3%);
 	}
 	.editor-content :global(.ProseMirror h4) {
 		font-size: 1.125em;
 		font-weight: 700;
 		line-height: 1.3;
-		color: hsl(210 40% 98%);
+		color: hsl(0, 0%, 2%);
 	}
 	.editor-content :global(.ProseMirror blockquote) {
 		padding-left: 1rem;
-		border-left: 3px solid hsl(217.2 32.6% 30%);
-		color: hsl(215 20.2% 80%);
+		border-left: 3px solid hsl(217, 93%, 18%);
+		color: hsl(180, 8%, 3%);
 	}
 	.editor-content :global(.ProseMirror ul),
 	.editor-content :global(.ProseMirror ol) {
@@ -282,14 +307,14 @@
 		list-style-type: decimal;
 	}
 	.editor-content :global(.ProseMirror code) {
-		background-color: hsl(222.2 47.4% 15%);
-		color: hsl(210 40% 98%);
+		background-color: hsl(222, 96%, 28%);
+		color: hsl(210, 17%, 5%);
 		padding: 0.2rem 0.4rem;
 		border-radius: 0.25rem;
 	}
 	.editor-content :global(.ProseMirror pre) {
-		background: hsl(222.2 47.4% 10%);
-		color: hsl(210 40% 98%);
+		background: hsl(220, 9%, 94%);
+		color: hsl(180, 11%, 2%);
 		font-family: 'JetBrains Mono', monospace;
 		padding: 0.75rem 1rem;
 		border-radius: 0.5rem;
@@ -298,18 +323,18 @@
 	button {
 		padding: 0.375rem;
 		border-radius: 0.25rem;
-		color: hsl(215 20.2% 65.1%);
+		color: hsl(210, 20%, 4%);
 		transition: all 150ms;
 		min-width: 34px;
 		font-weight: 600;
 		font-size: 0.875rem;
 	}
 	button:hover {
-		background-color: hsl(222.2 47.4% 15%);
+		background-color: hsl(222, 97%, 44%);
 		color: hsl(210 40% 98%);
 	}
 	.is-active {
-		background-color: hsl(222.2 47.4% 25%);
+		background-color: hsl(222, 97%, 44%);
 		color: hsl(210 40% 98%);
 	}
 	.divider {

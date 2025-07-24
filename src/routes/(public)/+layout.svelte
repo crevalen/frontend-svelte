@@ -7,6 +7,7 @@
   import 'nprogress/nprogress.css';
   import type { PageData } from './$types';
   import { theme } from '$lib/stores/theme';
+  import { fade } from 'svelte/transition';
 
   import "../../app.css";
 
@@ -170,7 +171,11 @@
   </div>
 
   <main class="flex-grow">
-    <slot />
+    {#key $page.url.pathname}
+			<div in:fade={{ duration: 200, delay: 200 }} out:fade={{ duration: 200 }}>
+				<slot />
+			</div>
+		{/key}
   </main>
 
   <Footer />

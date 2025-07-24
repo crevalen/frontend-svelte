@@ -75,9 +75,9 @@ model Tag {
 }
 
 model Media {
-  id                  String  @id @default(cuid())
-  key                 String  @unique
-  url                 String  @unique
+  id                  String   @id @default(cuid())
+  key                 String   @unique
+  url                 String   @unique
   url_medium          String?
   url_thumb           String?
   url_placeholder     String?
@@ -85,10 +85,13 @@ model Media {
   fileType            String
   size                Int
   createdAt           DateTime @default(now())
-  
-  // PERBAIKAN: Ubah Post? menjadi Post[] agar menjadi relasi satu-ke-banyak
-  PostAsFeaturedImage Post[] @relation("PostFeaturedImage")
-  PostAsOgImage       Post[] @relation("PostOgImage")
+  filename            String?  // Untuk menyimpan nama file asli
+  title               String?  // Judul untuk media
+  caption             String?  // Caption atau keterangan gambar
+ 
+
+  PostAsFeaturedImage Post[]   @relation("PostFeaturedImage")
+  PostAsOgImage       Post[]   @relation("PostOgImage")
 }
 
 model Setting {

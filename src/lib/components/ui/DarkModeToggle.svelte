@@ -10,7 +10,7 @@
 
 <button
   on:click={toggleTheme}
-  class="relative w-9 h-9 flex items-center justify-center rounded-full text-gray-300 hover:bg-slate-700 transition-colors"
+  class="relative w-9 h-9 flex items-center justify-center rounded-full text-slate-900 dark:text-slate-50 hover:bg-slate-700 hover:text-slate-50 transition-colors"
   aria-label="Toggle Dark Mode"
 >
   {#if $theme === 'light'}

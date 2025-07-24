@@ -12,6 +12,8 @@
   import PopularPosts from '$lib/components/sidebar/PopularPosts.svelte';
   import TableOfContents from '$lib/components/ui/TableOfContents.svelte';
   import { slide } from 'svelte/transition';
+  import { Icon } from '@steeze-ui/svelte-icon';
+  import { ChevronRight } from '@steeze-ui/heroicons';
 
   export let data: PageData;
 
@@ -21,6 +23,24 @@
 
   let headings: { id: string; text: string; level: 'h2' | 'h3' }[] = [];
   let showToc = false;
+
+  let justifiedParagraphs: NodeListOf<HTMLParagraphElement> | undefined;
+
+	function handleResponsiveAlignment() {
+		const isMobile = window.innerWidth < 1024;
+
+		if (!justifiedParagraphs) {
+			const articleContent = document.querySelector('#article-content');
+			if (!articleContent) return;
+			// Kita hanya menargetkan paragraf yang sudah punya style 'justify' dari CMS
+			justifiedParagraphs = articleContent.querySelectorAll('p[style*="text-align: justify"]');
+		}
+
+		justifiedParagraphs.forEach((p) => {
+			p.style.textAlign = isMobile ? 'left' : 'justify';
+		});
+	}
+
 
   function generateToc() {
     if (!browser || !post.content) return;
@@ -61,18 +81,26 @@
     window.requestAnimationFrame(() => {
         generateToc();
         insertRelatedArticles();
+        handleResponsiveAlignment();
     });
 }
 
   onMount(() => {
     runClientSideLogic();
+    window.addEventListener('resize', handleResponsiveAlignment);
     const timer = setTimeout(() => {
       fetch(`/api/posts/${post.slug}/view`, { method: 'POST' });
     }, 5000);
-    return () => clearTimeout(timer);
+    return () => 
+    clearTimeout(timer);
+    window.removeEventListener('resize', handleResponsiveAlignment);
   });
 
-  afterNavigate(runClientSideLogic);
+  afterNavigate(() => {
+		// Reset dan jalankan lagi setelah navigasi
+		justifiedParagraphs = undefined;
+		runClientSideLogic();
+	});
 
   function getSafeSchemaString() {
     if (!post) return '';
@@ -129,19 +157,27 @@
     
     <main class="lg:col-span-2">
       <article>
-        <nav class="text-sm text-gray-500 dark:text-gray-400 mb-5" aria-label="Breadcrumb">
-          <ol class="list-none p-0 flex items-center flex-wrap">
-            <li><a href="/" class="hover:text-cyan-600 dark:hover:text-cyan-400">Beranda</a><span class="mx-2">/</span></li>
-            {#if category}
-              <li><a href={`/kategori/${category.slug}`} class="hover:text-cyan-600 dark:hover:text-cyan-400">{category.name}</a><span class="mx-2">/</span></li>
-            {/if}
-            <li class="text-gray-700 dark:text-gray-300 truncate max-w-full">{post.title}</li>
-          </ol>
-        </nav>
+        <nav class="text-md text-slate-700 dark:text-gray-400 mb-5" aria-label="Breadcrumb">
+  <ol class="list-none p-0 flex items-center flex-wrap">
+    <li>
+      <a href="/" class="hover:text-cyan-600 dark:hover:text-cyan-400">Beranda</a>
+    </li>
+    {#if category}
+      <li class="flex items-center">
+        <Icon src={ChevronRight} theme="mini" class="h-5 w-5 mx-1 text-slate-700" />
+        <a href={`/kategori/${category.slug}`} class="hover:text-cyan-600 dark:hover:text-cyan-400">
+          {category.name}
+        </a>
+      </li>
+    {/if}
+    
+  </ol>
+</nav>
 
-        <h1 class="text-3xl md:text-4xl font-extrabold leading-tight tracking-tighter text-gray-900 dark:text-gray-100 mb-6">{post.title}</h1>
 
-        <div class="flex flex-wrap items-center text-gray-600 dark:text-gray-400 text-sm mb-6 border-y border-gray-200 dark:border-gray-700 py-3 gap-x-4 gap-y-2">
+        <h1 class="text-3xl md:text-4xl font-bold leading-tight tracking-tighter text-gray-900 dark:text-gray-100 mb-6">{post.title}</h1>
+
+        <div class="flex flex-wrap items-center text-slate-800 dark:text-white text-sm mb-6 border-y border-gray-200 dark:border-gray-700 py-3 gap-x-4 gap-y-2">
           <a href={`/penulis/${post.author.username}`} class="flex items-center gap-2 group">
         <img src={post.author.avatarUrl || '/default-avatar.png'} alt={post.author.displayName} class="w-8 h-8 rounded-full" />
         <span class="font-semibold text-gray-800 dark:text-gray-200 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
@@ -149,13 +185,13 @@
       </span>
           </a>
            <div class="flex items-center gap-4">
-            <span class="hidden sm:inline">•</span>
+            <span class="hidden sm:inline">|</span>
             {#if post.publishedAt}
               <time datetime={new Date(post.publishedAt).toISOString()}>
                 {formatDate(post.publishedAt)}
               </time>
             {/if}
-            {#if readTime > 0}<span class="hidden sm:inline">•</span><span>{readTime} menit baca</span>{/if}
+            {#if readTime > 0}<span class="hidden sm:inline">|</span><span>{readTime} menit baca</span>{/if}
           </div>
         </div>
         
@@ -195,7 +231,7 @@
     {/if}
   </div>
 {/if}
-        <div id="article-content" class="prose prose-base lg:prose-lg max-w-none dark:prose-invert">
+        <div id="article-content" class="prose lg:prose-lg dark:prose-invert">
           {@html post.content || ''}
         </div>
       </article>
@@ -203,10 +239,10 @@
       <div class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700/50 space-y-8">
         <div class="flex flex-wrap justify-between items-center gap-6">
           <div class="flex flex-wrap items-center gap-2">
-            <span class="text-sm font-semibold text-gray-600 dark:text-gray-400">Tags:</span>
+            <span class="text-sm font-semibold text-slate-800 dark:text-white">Tags:</span>
             {#if post.tags && post.tags.length > 0}
               {#each post.tags as tag}
-                <a href={`/tag/${tag.slug}`} class="px-3 py-1 bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-slate-300 rounded-full text-xs font-medium hover:bg-gray-300 dark:hover:bg-slate-600 transition-colors">{tag.name}</a>
+                <a href={`/tag/${tag.slug}`} class="px-3 py-1 bg-blue-600 dark:bg-slate-700 text-slate-50 dark:text-slate-300 rounded-full text-sm font-medium hover:bg-blue-600 dark:hover:bg-slate-600 transition-colors">{tag.name}</a>
               {/each}
             {/if}
           </div>

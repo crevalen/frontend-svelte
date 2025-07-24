@@ -29,18 +29,30 @@ export const actions: Actions = {
         return { success: true, message: 'Upload berhasil!' };
     },
 
-    editFile: async ({ request }) => {
+     editFile: async ({ request }) => {
         const formData = await request.formData();
         const id = formData.get('id') as string;
         const altText = formData.get('altText') as string;
+        const title = formData.get('title') as string;
+        const caption = formData.get('caption') as string;
+        const filename = formData.get('filename') as string;
 
         if (!id) return fail(400, { success: false, message: 'ID file tidak valid.' });
+        
         try {
-            await db.media.update({ where: { id }, data: { altText } });
+            await db.media.update({ 
+                where: { id }, 
+                data: { 
+                    altText,
+                    title,
+                    caption,
+                    filename
+                } 
+            });
         } catch {
-            return fail(500, { success: false, message: 'Gagal memperbarui alt text.' });
+            return fail(500, { success: false, message: 'Gagal memperbarui detail media.' });
         }
-        return { success: true, message: 'Alt text disimpan.' };
+        return { success: true, message: 'Detail media berhasil disimpan.' };
     },
 
     deleteFile: async ({ request }) => {

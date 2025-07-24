@@ -36,7 +36,7 @@
       <div class="flex items-center gap-2">
         <nav class="hidden lg:flex items-center gap-1">
           {#each menuItems as item}
-            <a href={item === 'Beranda' ? '/' : `/kategori/${item.toLowerCase()}`} class="px-3 py-2 text-sm font-medium hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors rounded-md">
+            <a href={item === 'Beranda' ? '/' : `/kategori/${item.toLowerCase()}`} class="px-3 py-2 text-md font-medium hover:bg-slate-700 hover:text-slate-50 dark:hover:text-cyan-400 transition-colors rounded-md">
               {item}
             </a>
           {/each}
