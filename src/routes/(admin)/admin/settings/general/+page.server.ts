@@ -1,12 +1,13 @@
 // src/routes/admin/settings/general/+page.server.ts
 
 import { db } from '$lib/server/db';
+import redis from '$lib/server/redis';
 import { error, fail, redirect } from '@sveltejs/kit'; 
 import { uploadImage } from '$lib/server/blob';
 import type { Actions, PageServerLoad } from './$types';
 import { revalidateFrontendPath } from '$lib/server/revalidate';
 
-// Daftar semua kunci pengaturan yang akan kita kelola di halaman ini
+
 const settingKeys = [
 	'site_favicon_url',
 	'site_logo_url',
@@ -19,21 +20,26 @@ const settingKeys = [
 	'custom_footer_script'
 ];
 
+const CACHE_KEY = 'settings:general';
+const CACHE_TTL_SECONDS = 86400; 
+
 export const load: PageServerLoad = async () => {
-	const settings = await db.setting.findMany({
-		where: { key: { in: settingKeys } }
-	});
+    const cachedData = await redis.get(CACHE_KEY);
+    if (cachedData) {
+        return { settings: JSON.parse(cachedData as string) };
+    }
 
-	const settingsMap = settings.reduce(
-		(acc: Record<string, string>, setting) => {
-			acc[setting.key] = setting.value;
-			return acc;
-		},
-		{}
-	);
+    const settings = await db.setting.findMany({ where: { key: { in: settingKeys } } });
+    const settingsMap = settings.reduce((acc: Record<string, string>, setting) => {
+        acc[setting.key] = setting.value;
+        return acc;
+    }, {});
 
-	return { settings: settingsMap };
+    await redis.set(CACHE_KEY, JSON.stringify(settingsMap), { ex: CACHE_TTL_SECONDS });
+
+    return { settings: settingsMap };
 };
+
 
 export const actions: Actions = {
 	default: async ({ request }) => {
@@ -43,7 +49,7 @@ export const actions: Actions = {
 		for (const key of settingKeys) {
 			const value = formData.get(key);
 
-			// Handle upload file untuk logo dan favicon
+			
 			if (value instanceof File && value.size > 0) {
 				try {
 					const newImage = await uploadImage(value);
@@ -55,11 +61,11 @@ export const actions: Actions = {
 						})
 					);
 				} catch {
-					// Abaikan jika upload gagal, jangan ubah setting yang ada
+					
 					console.error(`Gagal meng-upload file untuk ${key}`);
 				}
 			} else if (typeof value === 'string') {
-				// Simpan pengaturan berbasis teks
+				
 				settingOps.push(
 					db.setting.upsert({
 						where: { key },
@@ -71,17 +77,12 @@ export const actions: Actions = {
 		}
 
 		try {
-			await db.$transaction(settingOps);
-
-			// --- TAMBAHAN BARU DI SINI ---
-			// 2. Panggil revalidate setelah berhasil menyimpan
-			await revalidateFrontendPath('/');
-			// --- SELESAI TAMBAHAN ---
-
-		} catch {
-			return { success: false, message: 'Gagal menyimpan pengaturan.' };
-		}
-
-		return redirect(302, `/admin/settings`);
-	}
+            await db.$transaction(settingOps);
+            await redis.del(CACHE_KEY);
+            await revalidateFrontendPath('/');
+        } catch {
+            return fail(500, { success: false, message: 'Gagal menyimpan pengaturan.' });
+        }
+        return { success: true, message: 'Pengaturan berhasil diperbarui!' };
+    }
 };

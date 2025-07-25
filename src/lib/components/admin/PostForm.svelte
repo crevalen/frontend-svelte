@@ -42,6 +42,7 @@
 	let categoryString: string;
 	let tagString: string;
 
+	let formElement: HTMLFormElement;
 	// Logika Notifikasi
 	$: if (form) {
 		if (form.success && form.message) {
@@ -107,6 +108,20 @@
 	function removeTag(name: string) {
 		selectedTags = selectedTags.filter((t) => t.name !== name);
 	}
+	function handleSave() {
+        if (!formElement) return;
+
+        // Langkah krusial: Secara manual sinkronkan nilai dari variabel 'content'
+        // ke dalam hidden input sebelum form disubmit. Ini menjamin
+        // data terbaru dari editor yang akan dikirim.
+        const contentInput = formElement.querySelector<HTMLInputElement>('input[name="content"]');
+        if (contentInput) {
+            contentInput.value = content;
+        }
+
+        // Kirim form secara programmatic
+        formElement.requestSubmit();
+    }
 </script>
 
 {#if notification}
@@ -129,15 +144,16 @@
 	</div>
 {/if}
 
-<form method="POST" enctype="multipart/form-data">
+<form bind:this={formElement} method="POST" enctype="multipart/form-data">
 	<div class="mb-8 flex items-center justify-end gap-x-4">
 		<a
 			href="/admin/posts"
 			class="rounded-lg px-5 py-2 text-sm font-medium text-slate-900 transition-colors hover:bg-slate-100"
 			>Kembali</a
 		>
-		<button
-			type="submit"
+        <button
+			type="button"
+            on:click={handleSave}
 			class="rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 px-8 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 transition-transform hover:scale-105"
 		>
 			Simpan Postingan

@@ -1,6 +1,5 @@
-// src/routes/admin/posts/+page.server.ts
-
 import { db } from '$lib/server/db';
+import redis from '$lib/server/redis'; // <-- Impor Redis
 import type { Actions, PageServerLoad } from './$types';
 import { error, fail } from '@sveltejs/kit';
 
@@ -9,17 +8,16 @@ export const load: PageServerLoad = async ({ locals }) => {
 		where: {
 			authorId: locals.user?.id
 		},
-		// Ambil juga data relasi untuk ditampilkan di tabel
 		select: {
-    id: true,
-    title: true,
-    slug: true,
-    published: true,
-    updatedAt: true,
-    author: { select: { username: true } },
-    categories: { select: { name: true } },
-    tags: { select: { name: true } }
-},
+			id: true,
+			title: true,
+			slug: true,
+			published: true,
+			updatedAt: true,
+			author: { select: { username: true } },
+			categories: { select: { name: true } },
+			tags: { select: { name: true } }
+		},
 		orderBy: {
 			createdAt: 'desc'
 		}
@@ -52,6 +50,18 @@ export const actions: Actions = {
 		await db.post.delete({
 			where: { id }
 		});
+
+		// --- INVALIDASI CACHE SAAT HAPUS ---
+		const adminCacheKey = `post:${post.slug}`;
+		const publicCacheKey = `post-public:${post.slug}`;
+
+	await redis.del(
+    adminCacheKey, 
+    publicCacheKey, 
+    'dashboard:stats', 
+    'dashboard:popular_posts'
+);
+// --- SELESAI ---
 
 		return { success: true };
 	}

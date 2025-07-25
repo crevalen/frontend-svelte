@@ -1,16 +1,27 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
+import redis from '$lib/server/redis';
 import { marked } from 'marked';
 import { PUBLIC_SITE_URL } from '$env/static/public';
 import { buildSchema } from '$lib/server/schema-builder';
 
+const getCacheKey = (slug: string) => `post-public:${slug}`;
+const CACHE_TTL_SECONDS = 3600; 
+
 
 export const load: PageServerLoad = async ({ params, setHeaders }) => {
+    // Tetap gunakan cache Vercel ISR untuk HTML
     setHeaders({ 'Cache-Control': 'public, max-age=0, s-maxage=300' });
 
-    try {
-        // 1. Ambil Data Post Utama & Relasinya
+    const cacheKey = getCacheKey(params.slug);
+
+     try {
+        
+        const cachedData = await redis.get(cacheKey);
+        if (typeof cachedData === 'string') {
+            return JSON.parse(cachedData); 
+        }
         const post = await db.post.findFirst({
             where: { slug: params.slug, published: true },
             include: {
@@ -61,8 +72,7 @@ export const load: PageServerLoad = async ({ params, setHeaders }) => {
         const schemaType = post.schemaType || 'BlogPosting';
         const jsonLd = buildSchema(post, meta, settingsMap, contentHtml);
         
-        // 4. Return Semua Data dalam Satu Objek
-        return {
+        const dataToCache = {
             post: { ...post, content: contentHtml },
             meta,
             jsonLd,
@@ -70,6 +80,11 @@ export const load: PageServerLoad = async ({ params, setHeaders }) => {
             relatedPosts,
             popularPosts
         };
+
+        // 4. Simpan hasil lengkap ke Redis
+        await redis.set(cacheKey, JSON.stringify(dataToCache), { ex: CACHE_TTL_SECONDS });
+        
+        return dataToCache;
 
     } catch (e) {
         console.error(`Gagal memuat data untuk slug ${params.slug}:`, e);

@@ -1,19 +1,35 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
+import redis from '$lib/server/redis';
 import { db } from '$lib/server/db';
 import { uploadImage } from '$lib/server/blob';
 import { Prisma, SchemaType } from '@prisma/client';
 import { sendNotificationToAll } from '$lib/server/notifications';
 import { revalidateFrontendPath } from '$lib/server/revalidate';
 
+const CATEGORIES_CACHE_KEY = 'taxonomies:categories';
+const TAGS_CACHE_KEY = 'taxonomies:tags';
+
 export const load: PageServerLoad = async () => {
-	const allCategories = await db.category.findMany({ orderBy: { name: 'asc' } });
-	const allTags = await db.tag.findMany({ orderBy: { name: 'asc' } });
+	// 1. Coba ambil daftar kategori dan tag dari Redis
+	const [cachedCategories, cachedTags] = await redis.mget(CATEGORIES_CACHE_KEY, TAGS_CACHE_KEY);
+
+	// 2. Jika tidak ada di cache, baru ambil dari DB
+	const allCategories = typeof cachedCategories === 'string'
+		? JSON.parse(cachedCategories)
+		: await db.category.findMany({ orderBy: { name: 'asc' } });
+	const allTags = typeof cachedTags === 'string'
+		? JSON.parse(cachedTags)
+		: await db.tag.findMany({ orderBy: { name: 'asc' } });
+
+	// Jika cache kosong, kita tidak perlu set di sini karena sudah ditangani di halaman taksonomi.
+	// Halaman ini hanya bertugas membaca.
+
 	return {
-        allCategories,
-        allTags,
-        schemaTypes: Object.values(SchemaType) // <-- Kirim daftar tipe skema
-    };
+		allCategories,
+		allTags,
+		schemaTypes: Object.values(SchemaType)
+	};
 };
 
 export const actions: Actions = {
@@ -48,9 +64,32 @@ export const actions: Actions = {
 		if (!slug || !/^[a-z0-9-]+$/.test(slug)) return fail(400, { error: 'Slug tidak valid.' });
 
 		try {
-			const categoryConnectOrCreate = categoryNames.map((name) => ({ where: { name }, create: { name, slug: name.toLowerCase().replace(/\s+/g, '-') } }));
-			const tagConnectOrCreate = tagNames.map((name) => ({ where: { name }, create: { name, slug: name.toLowerCase().replace(/\s+/g, '-') } }));
+			let featuredImageId: string | undefined = undefined;
+			if (image?.size > 0) {
+				const newImage = await uploadImage(image, imageAltText);
+				featuredImageId = newImage.id;
+			}
 
+			// Langkah 2: Proses Kategori & Tag secara terpisah dan aman
+			const categoryUpserts = categoryNames.map((name) =>
+				db.category.upsert({
+					where: { name },
+					update: {},
+					create: { name, slug: name.toLowerCase().replace(/\s+/g, '-') }
+				})
+			);
+			const tagUpserts = tagNames.map((name) =>
+				db.tag.upsert({
+					where: { name },
+					update: {},
+					create: { name, slug: name.toLowerCase().replace(/\s+/g, '-') }
+				})
+			);
+            
+            // Jalankan semua operasi upsert dan kumpulkan hasilnya
+			const resultingCategories = await Promise.all(categoryUpserts);
+			const resultingTags = await Promise.all(tagUpserts);
+			
 			const newPost = await db.post.create({
 				data: {
 					title, slug, content, metaTitle, metaDescription, focusKeyword,
@@ -59,15 +98,17 @@ export const actions: Actions = {
 					publishedAt: published ? (publishedAtString ? new Date(publishedAtString) : new Date()) : null,
 					authorId: locals.user.id,
 					featuredImageId: featuredImageId,
-					categories: { connectOrCreate: categoryConnectOrCreate },
-					tags: { connectOrCreate: tagConnectOrCreate }
+					categories: {
+						connect: resultingCategories.map((cat) => ({ id: cat.id }))
+					},
+					tags: {
+						connect: resultingTags.map((tag) => ({ id: tag.id }))
+					}
 				},
-				include: {
-					featuredImage: true,
-					categories: true
-				}
+				include: { categories: true, featuredImage: true }
 			});
 
+			await redis.del('dashboard:stats', 'dashboard:popular_posts');
 			if (newPost.published) {
 				await sendNotificationToAll(newPost);
 				
@@ -80,13 +121,14 @@ export const actions: Actions = {
 			}
 
 		} catch (e) {
+			console.error("GAGAL MENYIMPAN POSTINGAN:", e); 
 			if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
 				return fail(400, { error: `Slug "${slug}" sudah digunakan.` });
 			}
-			return fail(500, { error: 'Gagal menyimpan postingan.' });
+			// Berikan pesan error yang lebih umum tapi jelas
+			return fail(500, { error: 'Terjadi kesalahan internal saat menyimpan postingan. Silakan coba lagi.' });
 		}
-		
-		// ## PERBAIKAN 3: Menggunakan 'return redirect' yang lebih aman ##
+
 		return redirect(302, `/admin/posts`);
 	}
 };

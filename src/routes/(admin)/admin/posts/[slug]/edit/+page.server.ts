@@ -1,11 +1,38 @@
 import { db } from '$lib/server/db';
+import redis from '$lib/server/redis'; 
 import { error, fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { Prisma, SchemaType } from '@prisma/client';
 import { revalidateFrontendPath } from '$lib/server/revalidate';
 import { uploadImage } from '$lib/server/blob';
 
+
+const getCacheKey = (slug: string) => `post:${slug}`;
+const CACHE_TTL_SECONDS = 3600; 
+
 export const load: PageServerLoad = async ({ params, locals }) => {
+	const cacheKey = getCacheKey(params.slug);
+
+	// 1. Coba ambil dari Redis
+	const cachedPost = await redis.get(cacheKey);
+	if (typeof cachedPost === 'string') {
+	const postData = JSON.parse(cachedPost);
+		// Pastikan user yang login adalah author
+		if (postData.authorId !== locals.user?.id) {
+			throw error(403, 'Akses ditolak');
+		}
+		// Data lain yang tidak di-cache tetap diambil dari DB
+		const allCategories = await db.category.findMany({ orderBy: { name: 'asc' } });
+		const allTags = await db.tag.findMany({ orderBy: { name: 'asc' } });
+		return {
+			post: postData,
+			allCategories,
+			allTags,
+			schemaTypes: Object.values(SchemaType)
+		};
+	}
+
+	// 2. Cache Miss: Ambil dari DB
 	const post = await db.post.findUnique({
 		where: { slug: params.slug },
 		include: { categories: true, tags: true, featuredImage: true }
@@ -13,20 +40,27 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 	if (!post) throw error(404, 'Postingan tidak ditemukan');
 	if (post.authorId !== locals.user?.id) throw error(403, 'Akses ditolak');
+    
+    const postData = {
+			...post,
+			featuredImageUrl: (post as any).featuredImage?.url
+		};
 
+	// 3. Simpan ke Redis
+	await redis.set(cacheKey, JSON.stringify(postData), { ex: CACHE_TTL_SECONDS });
+    
+    // Data lain yang tidak perlu di-cache
 	const allCategories = await db.category.findMany({ orderBy: { name: 'asc' } });
 	const allTags = await db.tag.findMany({ orderBy: { name: 'asc' } });
 
 	return {
-		post: {
-			...post,
-			featuredImageUrl: (post as any).featuredImage?.url
-		},
+		post: postData,
 		allCategories,
 		allTags,
-	        schemaTypes: Object.values(SchemaType)
+		schemaTypes: Object.values(SchemaType)
 	};
 };
+
 
 export const actions: Actions = {
 	default: async ({ request, params, locals }) => {
@@ -72,7 +106,7 @@ export const actions: Actions = {
 				ogTitle,
 				ogDescription,
 				canonicalUrl,
-				schemaType,
+				schemaType: { set: schemaType as SchemaType },
 				noIndex,
 				noFollow,
 			};
@@ -95,6 +129,19 @@ export const actions: Actions = {
 				}
 			});
 
+			const adminOldCacheKey = `post:${oldSlug}`;
+			const adminNewCacheKey = `post:${newSlug}`;
+			const publicOldCacheKey = `post-public:${oldSlug}`;
+			const publicNewCacheKey = `post-public:${newSlug}`;
+
+await redis.del(
+    adminOldCacheKey, 
+    adminNewCacheKey, 
+    publicOldCacheKey, 
+    publicNewCacheKey, 
+    'dashboard:stats', 
+    'dashboard:popular_posts'
+);
 			// --- LOGIKA REVALIDASI YANG SUDAH DISEMPURNAKAN ---
 			const pathsToRevalidate = new Set<string>();
 			pathsToRevalidate.add('/'); // 1. Selalu revalidasi homepage
@@ -123,7 +170,7 @@ export const actions: Actions = {
 			// --- SELESAI ---
 
 		} catch (e) {
-			console.error(e);
+			console.error("GAGAL MEMPERBARUI POSTINGAN:", e); // Log error
 			if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
 				return fail(400, { error: `Slug "${newSlug}" sudah digunakan.` });
 			}
