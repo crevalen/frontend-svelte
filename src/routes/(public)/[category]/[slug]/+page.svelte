@@ -24,6 +24,17 @@
   let headings: { id: string; text: string; level: 'h2' | 'h3' }[] = [];
   let showToc = false;
 
+  let resizeTimeout: NodeJS.Timeout;
+
+function debouncedResize() {
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    handleResponsiveAlignment();
+  }, 150);
+}
+
+
+
   let justifiedParagraphs: NodeListOf<HTMLParagraphElement> | undefined;
 
 	function handleResponsiveAlignment() {
@@ -86,15 +97,17 @@
 }
 
   onMount(() => {
-    runClientSideLogic();
-    window.addEventListener('resize', handleResponsiveAlignment);
-    const timer = setTimeout(() => {
-      fetch(`/api/posts/${post.slug}/view`, { method: 'POST' });
-    }, 5000);
-    return () => 
+  runClientSideLogic();
+  window.addEventListener('resize', debouncedResize); // pakai debounce!
+  const timer = setTimeout(() => {
+    fetch(`/api/posts/${post.slug}/view`, { method: 'POST' });
+  }, 5000);
+
+  return () => {
     clearTimeout(timer);
-    window.removeEventListener('resize', handleResponsiveAlignment);
-  });
+    window.removeEventListener('resize', debouncedResize); // jangan lupa cleanup!
+  };
+});
 
   afterNavigate(() => {
 		// Reset dan jalankan lagi setelah navigasi
@@ -179,7 +192,13 @@
 
         <div class="flex flex-wrap items-center text-slate-800 dark:text-white text-sm mb-6 border-y border-gray-200 dark:border-gray-700 py-3 gap-x-4 gap-y-2">
           <a href={`/penulis/${post.author.username}`} class="flex items-center gap-2 group">
-        <img src={post.author.avatarUrl || '/default-avatar.png'} alt={post.author.displayName} class="w-8 h-8 rounded-full" />
+        <img 
+  src={post.author.avatarUrl || '/default-avatar.png'} 
+  alt={post.author.displayName} 
+  class="w-8 h-8 rounded-full"
+  loading="lazy"
+  decoding="async"
+/>
         <span class="font-semibold text-gray-800 dark:text-gray-200 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
       {post.author.displayName}
       </span>

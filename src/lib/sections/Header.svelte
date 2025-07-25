@@ -21,7 +21,15 @@
       <div class="flex items-center gap-6">
         <a href="/" aria-label="Beranda">
           {#if siteLogoUrl}
-            <img src={siteLogoUrl} alt="{siteTitle || 'Logo Situs'}" class="{logoSize} w-auto" />
+            <img
+  src={siteLogoUrl}
+  alt="{siteTitle || 'Logo Situs'}"
+  class="{logoSize} w-auto"
+  width="169"  
+  height="36"
+  decoding="async"
+  fetchpriority="high"
+/>
           {:else}
             <span class="text-xl font-bold tracking-tighter text-gray-800 dark:text-gray-200 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors">
               {siteTitle || 'MySite.'}
