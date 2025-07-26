@@ -63,7 +63,14 @@
 			element: element,
 			extensions: [
 				StarterKit,
-				Link.configure({ openOnClick: false }),
+				Link.configure({
+					openOnClick: false,
+					autolink: true,
+					HTMLAttributes: {
+						rel: null, 
+						target: null
+					}
+				}),
 				ImageExtension,
 				TextAlign.configure({ types: ['heading', 'paragraph'] }),
 				Blockquote,
