@@ -2,7 +2,6 @@ import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
 import redis from '$lib/server/redis';
-import { marked } from 'marked';
 import { PUBLIC_SITE_URL } from '$env/static/public';
 import { buildSchema } from '$lib/server/schema-builder';
 
@@ -49,15 +48,14 @@ export const load: PageServerLoad = async ({ params, setHeaders }) => {
             db.post.findMany({ where: { published: true }, orderBy: { viewCount: 'desc' }, take: 5, select: { title: true, slug: true, publishedAt: true, featuredImage: { select: { url: true } }, categories: { select: { name: true, slug: true }, take: 1 } } })
         ]);
         
-        // 3. Proses Semua Data (Konten, Meta, JSON-LD)
-        const contentHtml = await marked.parse(post.content);
+        
         const settingsMap = settings.reduce((acc: any, setting: {key: string, value: string}) => ({...acc, [setting.key]: setting.value}), {});
         
         const finalUrl = `${PUBLIC_SITE_URL}/${post.categories[0]?.slug || 'blog'}/${post.slug}`;
         const siteTitle = settingsMap.site_title || 'Blog';
         const titleTemplate = settingsMap.post_title_template || '%post_title% | %site_title%';
         const finalTitle = post.metaTitle || titleTemplate.replace('%post_title%', post.title).replace('%site_title%', siteTitle);
-        const finalDescription = post.metaDescription || contentHtml.substring(0, 160).replace(/<[^>]*>/g, '');
+        const finalDescription = post.metaDescription || post.content.substring(0, 160).replace(/<[^>]*>/g, '');
 
         const meta = {
             title: finalTitle,
@@ -70,10 +68,10 @@ export const load: PageServerLoad = async ({ params, setHeaders }) => {
         };
 
         const schemaType = post.schemaType || 'BlogPosting';
-        const jsonLd = buildSchema(post, meta, settingsMap, contentHtml);
+        const jsonLd = buildSchema(post, meta, settingsMap, post.content);
         
         const dataToCache = {
-            post: { ...post, content: contentHtml },
+            post: { ...post, content: post.content },
             meta,
             jsonLd,
             comments,

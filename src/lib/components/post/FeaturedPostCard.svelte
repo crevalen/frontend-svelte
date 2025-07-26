@@ -13,6 +13,7 @@ import { lazyload } from '$lib/actions/lazyload';
   use:lazyload={post.featuredImage?.url}
   alt={post.title} 
   class="lazy-image w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+  fetchpriority="high"
   width="300" height="169"
 />
     </div>
