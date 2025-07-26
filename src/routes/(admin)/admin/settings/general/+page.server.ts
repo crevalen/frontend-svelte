@@ -26,8 +26,13 @@ const CACHE_TTL_SECONDS = 86400;
 export const load: PageServerLoad = async () => {
     const cachedData = await redis.get(CACHE_KEY);
     if (cachedData) {
-        return { settings: JSON.parse(cachedData as string) };
-    }
+		// --- PERBAIKAN UTAMA DI SINI ---
+		// Jika cachedData sudah berupa objek, gunakan langsung.
+		// Jika masih berupa string, baru kita parse.
+		const settings = typeof cachedData === 'string' ? JSON.parse(cachedData) : cachedData;
+		return { settings };
+		// --- SELESAI PERBAIKAN ---
+	}
 
     const settings = await db.setting.findMany({ where: { key: { in: settingKeys } } });
     const settingsMap = settings.reduce((acc: Record<string, string>, setting) => {
