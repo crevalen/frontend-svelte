@@ -150,7 +150,7 @@
 <svelte:head>
   <title>{data.settings?.site_title || 'Judul Situs Default'}</title>
   <meta name="google-site-verification" content="nVnoX2VqJN1VEotoKyNBB1WHBUdK86IANmecOn95yXs" />
-  {#if data.settings?.site_favicon_url}<link rel="icon" sizes="32x32" href={data.settings.site_favicon_url} />{/if}
+  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
   {#if data.settings?.gsc_verification_code}<meta name="google-site-verification" content={data.settings.gsc_verification_code} />{/if}
   {#if data.settings?.bing_verification_code}<meta name="msvalidate.01" content={data.settings.bing_verification_code} />{/if}
   {#if data.settings?.yandex_verification_code}<meta name="yandex-verification" content={data.settings.yandex_verification_code} />{/if}

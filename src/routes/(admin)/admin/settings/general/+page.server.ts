@@ -9,7 +9,7 @@ import { revalidateFrontendPath } from '$lib/server/revalidate';
 
 
 const settingKeys = [
-	'site_favicon_url',
+	
 	'site_logo_url',
 	'publisher_logo_url',
 	'gsc_verification_code',

@@ -56,7 +56,7 @@
 		<div class="flex flex-col gap-y-6">
 			<div class="rounded-lg border border-slate-800 bg-slate-800/50 p-6">
 				<h3 class="mb-4 text-lg font-semibold text-white">Identitas Situs</h3>
-				<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+				<div class="grid grid-cols-1 gap-6">
 					<div>
 						<label for="site_logo_url" class="mb-2 block text-sm font-medium text-slate-300"
 							>Logo Situs</label
@@ -70,19 +70,7 @@
 						{/if}
 						<input id="site_logo_url" name="site_logo_url" type="file" class="input-file" />
 					</div>
-					<div>
-						<label for="site_favicon_url" class="mb-2 block text-sm font-medium text-slate-300"
-							>Favicon</label
-						>
-						{#if data.settings.site_favicon_url}
-							<img
-								src={data.settings.site_favicon_url}
-								alt="Favicon saat ini"
-								class="mb-2 h-12 w-12 rounded-md bg-white/10 p-1"
-							/>
-						{/if}
-						<input id="site_favicon_url" name="site_favicon_url" type="file" class="input-file" />
-					</div>
+					
 					<div class="md:col-span-2">
 						<label for="publisher_logo_url" class="mb-2 block text-sm font-medium text-slate-300"
 							>Logo Publisher (Untuk SEO)</label
