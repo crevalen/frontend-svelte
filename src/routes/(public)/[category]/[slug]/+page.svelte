@@ -166,7 +166,7 @@ function debouncedResize() {
 
 </svelte:head>
 <div class="py-8 sm:py-12">
-  <div class="container max-w-[1100px] mx-auto px-4 grid grid-cols-1 lg:grid-cols-3 lg:gap-x-12">
+  <div class="container max-w-[1200px] mx-auto px-4 grid grid-cols-1 lg:grid-cols-3 lg:gap-x-12">
     
     <main class="lg:col-span-2">
       <article>
