@@ -14,31 +14,42 @@ export function buildSchema(post: any, meta: any, settingsMap: any, contentHtml:
 	const baseSchema: any = {
 		'@context': 'https://schema.org',
 		'@type': post.schemaType || 'BlogPosting',
-		headline: meta.ogTitle,
+		headline: meta.ogTitle?.slice(0, 110),
 		description: meta.ogDescription,
-		image: meta.ogImage,
+		image: {
+  			'@type': 'ImageObject',
+  			url: meta.ogImage,
+  			width: 1200, 
+  			height: 720  
+},
 		datePublished: new Date(post.publishedAt || post.createdAt).toISOString(),
 		dateModified: new Date(post.updatedAt).toISOString(),
 		wordCount,
 		author: {
 			'@type': 'Person',
 			name: post.author?.displayName || post.author?.username || 'Redaksi',
-			// Tambahkan URL ke halaman penulis jika ada
 			url: `${PUBLIC_SITE_URL}/penulis/${post.author?.username}`
 		},
 		publisher: {
 			'@type': 'Organization',
-			name: settingsMap.publisher_name || settingsMap.site_title || 'Crevalen.xyz',
+			name: settingsMap.publisher_name || settingsMap.site_title || 'Crevalen',
+			url: `${PUBLIC_SITE_URL}`,
 			logo: {
 				'@type': 'ImageObject',
 				// Prioritaskan logo publisher, lalu logo situs, baru OG image
-				url: settingsMap.publisher_logo_url || settingsMap.site_logo_url || meta.ogImage
+				url: settingsMap.publisher_logo_url || 'https://www.crevalen.xyz/publisher.png',
+				width: 600,
+  				height: 60
+
+
 			}
 		},
 		mainEntityOfPage: {
-			'@type': 'WebPage',
-			'@id': finalUrl
-		}
+  		'@type': 'WebPage',
+  		'@id': finalUrl,
+  		url: finalUrl,
+		name: meta.ogTitle
+}
 	};
 
 	// Tambahkan field spesifik berdasarkan tipe skema
