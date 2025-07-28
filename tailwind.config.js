@@ -14,7 +14,7 @@ export default {
         // Gaya DEFAULT untuk kelas `.prose` (Mobile-First)
         DEFAULT: {
           css: {
-            maxWidth: '45ch', // Lebar maksimum teks: 45 karakter
+            maxWidth: '50ch', // Lebar maksimum teks: 45 karakter
             fontSize: '16px', // Ukuran font paragraf
             lineHeight: '1.6', // Line height
 
@@ -52,7 +52,7 @@ export default {
         // Gaya tambahan untuk kelas `.prose-lg` (Desktop)
         lg: {
           css: {
-            maxWidth: '65ch', 
+            maxWidth: '70ch', 
             fontSize: '18px',
             lineHeight: '1.6',
 

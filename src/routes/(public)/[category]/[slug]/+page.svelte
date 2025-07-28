@@ -216,18 +216,21 @@ function debouncedResize() {
         
        
 
-        {#if post.featuredImage}<figure class="w-full max-w-screen-xl mx-auto">
-  <img
-    src={post.featuredImage.url}
-    alt={post.title}
-    width="1200" height="720"
-    loading="eager"
-    fetchpriority="high"
-    class="w-full h-auto object-cover rounded-2xl"
-    srcset={`${post.featuredImage.url_thumb} 300w, ${post.featuredImage.url_medium} 768w, ${post.featuredImage.url} 1200w`}
-    sizes="(max-width: 1200px) 100vw, 1200px"
-  />
-</figure>{/if}
+        {#if post.featuredImage}
+  <figure class="w-full mb-8">
+    <img
+      src={post.featuredImage.url}
+      alt={post.title}
+      width="1200"
+      height="720"
+      loading="eager"
+      fetchpriority="high"
+      class="w-full h-auto object-cover rounded-2xl"
+      srcset={`${post.featuredImage.url_thumb} 300w, ${post.featuredImage.url_medium} 768w, ${post.featuredImage.url} 1200w`}
+      sizes="(max-width: 1024px) 100vw, (max-width: 1280px) 66vw, 720px"
+    />
+  </figure>
+{/if}
         {#if headings.length > 1}
   <div class="my-8 border border-gray-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 rounded-lg overflow-hidden">
     <button
