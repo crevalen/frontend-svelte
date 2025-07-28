@@ -166,7 +166,7 @@ function debouncedResize() {
 
 </svelte:head>
 <div class="py-8 sm:py-12">
-  <div class="container max-w-[1200px] mx-auto px-4 grid grid-cols-1 lg:grid-cols-3 lg:gap-x-12">
+  <div class="container max-w-[1100px] mx-auto px-4 grid grid-cols-1 lg:grid-cols-3 lg:gap-x-12">
     
     <main class="lg:col-span-2">
       <article>
@@ -225,9 +225,13 @@ function debouncedResize() {
       height="720"
       loading="eager"
       fetchpriority="high"
-      class="w-full h-auto object-cover rounded-2xl"
-      srcset={`${post.featuredImage.url_thumb} 300w, ${post.featuredImage.url_medium} 768w, ${post.featuredImage.url} 1200w`}
-      sizes="(max-width: 1024px) 100vw, (max-width: 1280px) 66vw, 720px"
+      class="w-full h-auto" 
+      srcset={`
+        ${post.featuredImage.url_thumb} 300w, 
+        ${post.featuredImage.url_medium} 768w, 
+        ${post.featuredImage.url} 1200w
+      `}
+      sizes="(max-width: 1024px) 100vw, 1200px"
     />
   </figure>
 {/if}
