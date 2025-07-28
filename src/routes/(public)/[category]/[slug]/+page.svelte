@@ -224,10 +224,10 @@ function debouncedResize() {
     ${post.featuredImage.url_medium} 768w,
     ${post.featuredImage.url} 1200w
   `}
-  sizes="(max-width: 1100px) 100vw, 1100px"
+  sizes="(max-width: 1200px) 100vw, 1200px"
   loading="eager"
   fetchpriority="high"
-  width="1200" height="675"
+  width="1200" height="720"
 /></figure>{/if}
         {#if headings.length > 1}
   <div class="my-8 border border-gray-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 rounded-lg overflow-hidden">
