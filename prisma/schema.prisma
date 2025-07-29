@@ -10,15 +10,16 @@ datasource db {
 }
 
 model User {
-  id           String    @id @default(cuid())
-  username     String    @unique
-  passwordHash String
-  role         Role      @default(AUTHOR)
-  avatarUrl    String?
-  bio          String?
-  displayName  String?
-  posts        Post[]
-  sessions     Session[]
+  id            String         @id @default(cuid())
+  username      String         @unique
+  passwordHash  String
+  role          Role           @default(AUTHOR)
+  avatarUrl     String?
+  bio           String?
+  displayName   String?
+  posts         Post[]
+  sessions      Session[]
+  loginAttempts LoginAttempt[]
 }
 
 model Session {
@@ -30,41 +31,44 @@ model Session {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-
 model LoginAttempt {
   id        String   @id @default(cuid())
-  userId    String
+  userId    String?
+  ip        String
+  success   Boolean
   createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id])
 }
 
 model Post {
-  id              String     @id @default(cuid())
-  slug            String     @unique
+  id              String      @id @default(cuid())
+  slug            String      @unique
   title           String
-  content         String     @db.Text
-  published       Boolean    @default(false)
+  content         String      @db.Text
+  published       Boolean     @default(false)
   metaTitle       String?
   metaDescription String?
   focusKeyword    String?
   ogTitle         String?
   ogDescription   String?
   canonicalUrl    String?
-  noIndex         Boolean    @default(false)
-  noFollow        Boolean    @default(false)
-  schemaType      SchemaType?  @default(BlogPosting)
+  noIndex         Boolean     @default(false)
+  noFollow        Boolean     @default(false)
+  schemaType      SchemaType? @default(BlogPosting)
   publishedAt     DateTime?
-  createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
   authorId        String
-  featuredImageId String?    // Dihapus: @unique
-  ogImageId       String?    // Dihapus: @unique
-  viewCount       Int        @default(0)
+  featuredImageId String? // Dihapus: @unique
+  ogImageId       String? // Dihapus: @unique
+  viewCount       Int         @default(0)
   comments        Comment[]
-  author          User       @relation(fields: [authorId], references: [id])
-  featuredImage   Media?     @relation("PostFeaturedImage", fields: [featuredImageId], references: [id])
-  ogImage         Media?     @relation("PostOgImage", fields: [ogImageId], references: [id])
-  categories      Category[] @relation("CategoryToPost")
-  tags            Tag[]      @relation("PostToTag")
+  author          User        @relation(fields: [authorId], references: [id])
+  featuredImage   Media?      @relation("PostFeaturedImage", fields: [featuredImageId], references: [id])
+  ogImage         Media?      @relation("PostOgImage", fields: [ogImageId], references: [id])
+  categories      Category[]  @relation("CategoryToPost")
+  tags            Tag[]       @relation("PostToTag")
 }
 
 model Category {
@@ -84,23 +88,22 @@ model Tag {
 }
 
 model Media {
-  id                  String   @id @default(cuid())
-  key                 String   @unique
-  url                 String   @unique
-  url_medium          String?
-  url_thumb           String?
-  url_placeholder     String?
-  altText             String?
-  fileType            String
-  size                Int
-  createdAt           DateTime @default(now())
-  filename            String?  // Untuk menyimpan nama file asli
-  title               String?  // Judul untuk media
-  caption             String?  // Caption atau keterangan gambar
- 
+  id              String   @id @default(cuid())
+  key             String   @unique
+  url             String   @unique
+  url_medium      String?
+  url_thumb       String?
+  url_placeholder String?
+  altText         String?
+  fileType        String
+  size            Int
+  createdAt       DateTime @default(now())
+  filename        String? // Untuk menyimpan nama file asli
+  title           String? // Judul untuk media
+  caption         String? // Caption atau keterangan gambar
 
-  PostAsFeaturedImage Post[]   @relation("PostFeaturedImage")
-  PostAsOgImage       Post[]   @relation("PostOgImage")
+  PostAsFeaturedImage Post[] @relation("PostFeaturedImage")
+  PostAsOgImage       Post[] @relation("PostOgImage")
 }
 
 model Setting {
@@ -110,16 +113,16 @@ model Setting {
 }
 
 model Page {
-  id              String   @id @default(cuid())
-  slug            String   @unique
+  id              String          @id @default(cuid())
+  slug            String          @unique
   title           String
-  content         String   @db.Text
-  published       Boolean  @default(false)
+  content         String          @db.Text
+  published       Boolean         @default(false)
   metaTitle       String?
   metaDescription String?
   schemaType      PageSchemaType? @default(WebPage)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
 }
 
 model Comment {
