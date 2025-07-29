@@ -155,7 +155,7 @@ function debouncedResize() {
   <meta property="og:image" content={meta.ogImage} />
   <meta property="og:url" content={meta.canonical} />
   <meta property="og:type" content="article" />
-
+ <meta name="fediverse:creator" content="@crevalen@mastodon.social">
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content={meta.ogTitle} />
   <meta name="twitter:description" content={meta.ogDescription} />

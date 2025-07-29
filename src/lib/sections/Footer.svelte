@@ -46,21 +46,45 @@
       <p class="text-sm">
         &copy; {new Date().getFullYear()} Crevalen. All Rights Reserved.
       </p>
-      <div class="flex space-x-4 mt-4 sm:mt-0">
-       <a href="https://x.com/crevalens" aria-label="Twitter" class="hover:text-white transition-colors">
-          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
-        </a>
-        <a href="https://facebook.com/crevalens" aria-label="Facebook" class="hover:text-white transition-colors">
-          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M14 13.5h2.5l1-4H14v-2c0-1.03 0-2 2-2h1.5V2.14c-.326-.043-1.557-.14-2.857-.14C11.928 2 10 3.657 10 6.7v2.8H7v4h3V22h4z"/></svg>
-        </a>
-        <a href="https://www.threads.com/@aldysm15" aria-label="Threads" class="hover:text-white transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"/></svg>
-        </a>
-        <a href="https://flipboard.com/@Crevalen" aria-label="Flipboard" class="hover:text-white transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32"><path d="M0 0v32h32V0H0zm19 13h-6v6h-6v6H7V7h18v6z"/></svg>
-        </a>
+      <div class="flex space-x-3 mt-4 sm:mt-0">
+  <a href="https://x.com/crevalens" aria-label="Twitter (X)"
+     class="group w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-[#1D9BF0]/20 transition-all">
+    <svg class="w-5 h-5 text-slate-300 group-hover:text-[#1D9BF0] transition-colors" 
+         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M3 3h4.6l5.2 7.6L18.2 3H21l-7.1 9.9L21 21h-4.6l-5.4-7.9L5.4 21H3l7.5-10.3z"/>
+    </svg>
+  </a>
 
-      </div>
+  <a href="https://facebook.com/crevalens" aria-label="Facebook"
+     class="group w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-[#1877F2]/20 transition-all">
+    <svg class="w-5 h-5 text-slate-300 group-hover:text-[#1877F2] transition-colors" 
+         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M14 13.5h2.5l1-4H14v-2c0-1.03 0-2 2-2h1.5V2.14c-.326-.043-1.557-.14-2.857-.14C11.928 2 10 3.657 10 6.7v2.8H7v4h3V22h4z"/>
+    </svg>
+  </a>
+
+  <a href="https://www.threads.net/@crevalens" aria-label="Threads"
+     class="group w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/20 transition-all">
+    <svg class="w-5 h-5 text-slate-300 group-hover:text-white transition-colors"
+         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"/>
+    </svg>
+  </a>
+
+  <a href="https://flipboard.com/@Crevalen" aria-label="Flipboard"
+     class="group w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-[#E12828]/20 transition-all">
+    <svg class="w-5 h-5 text-slate-300 group-hover:text-[#E12828] transition-colors"
+         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="currentColor">
+      <path d="M0 0v32h32V0H0zm19 13h-6v6h-6v6H7V7h18v6z"/>
+    </svg>
+  </a>
+</div>
+
     </div>
   </div>
+<nav>
+    <a rel="me" href="https://mastodon.social/@crevalen" class="text-blue-500 hover:underline">
+      Mastodon
+    </a>
+  </nav>
 </footer>
