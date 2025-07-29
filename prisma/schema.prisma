@@ -25,7 +25,16 @@ model Session {
   id        String   @id
   expiresAt DateTime
   userId    String
+  userAgent String
+  ip        String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+
+model LoginAttempt {
+  id        String   @id @default(cuid())
+  userId    String
+  createdAt DateTime @default(now())
 }
 
 model Post {

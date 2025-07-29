@@ -2,110 +2,132 @@
 
 import { db } from './db';
 import { TimeSpan, createDate } from 'oslo';
-import { randomBytes } from 'crypto';
+import { randomBytes, createHash } from 'crypto';
 import { Argon2id } from 'oslo/password';
+
+// Konstanta
+const SESSION_TTL = new TimeSpan(30, 'd'); // 30 hari
+const argon2id = new Argon2id();
+const LOGIN_ATTEMPT_LIMIT = 5; // max attempt per 15 menit
+
+// --- UTILITAS ---
+function hashToken(token: string) {
+	return createHash('sha256').update(token).digest('hex');
+}
+
+function getExpiryDate() {
+	return createDate(SESSION_TTL);
+}
 
 // --- MANAJEMEN SESI ---
 
 /**
- * Membuat sesi baru untuk pengguna di database.
- * @param userId - ID pengguna yang login.
- * @returns ID sesi yang baru dibuat.
+ * Membuat sesi baru untuk pengguna.
  */
-export async function createSession(userId: string) {
-	// Hapus sesi lama yang mungkin sudah kadaluarsa untuk menjaga kebersihan database
+export async function createSession(userId: string, userAgent: string, ip: string) {
 	await db.session.deleteMany({
-		where: {
-			userId: userId,
-			expiresAt: {
-				lt: new Date()
-			}
-		}
+		where: { userId, expiresAt: { lt: new Date() } }
 	});
 
-	const sessionId = randomBytes(16).toString('hex');
-	const expiresAt = createDate(new TimeSpan(30, 'd')); // Sesi berlaku selama 30 hari
+	const rawToken = randomBytes(64).toString('hex'); // 512-bit entropy
+	const tokenHash = hashToken(rawToken);
 
 	await db.session.create({
 		data: {
-			id: sessionId,
-			userId: userId,
-			expiresAt: expiresAt
+			id: tokenHash,
+			userId,
+			expiresAt: getExpiryDate(),
+			userAgent,
+			ip
 		}
 	});
 
-	return sessionId;
+	// Token mentah hanya dikirim via cookie aman
+	return rawToken;
 }
 
 /**
- * Memvalidasi ID sesi dari cookie.
- * @param sessionId - ID sesi yang perlu divalidasi.
- * @returns Objek berisi user dan session jika valid, atau null jika tidak.
+ * Validasi sesi + rolling expiration.
  */
-export async function validateSession(sessionId: string) {
+export async function validateSession(rawToken: string, currentUA: string, currentIP: string) {
+	if (!rawToken) return { user: null, session: null };
+
+	const tokenHash = hashToken(rawToken);
+
 	const session = await db.session.findUnique({
-		where: { id: sessionId },
-		include: {
-			user: {
-				select: {
-					id: true,
-					username: true
-				}
-			}
-		}
+		where: { id: tokenHash },
+		include: { user: { select: { id: true, username: true } } }
 	});
 
-	if (!session || !session.user) {
-		return { user: null, session: null };
-	}
+	if (!session || !session.user) return { user: null, session: null };
 
+	// Cek expiry
 	if (session.expiresAt < new Date()) {
-		// Hapus sesi jika sudah kadaluarsa
-		await db.session.delete({ where: { id: sessionId } });
+		await db.session.delete({ where: { id: tokenHash } });
 		return { user: null, session: null };
 	}
 
-	return {
-		user: session.user,
-		session: {
-			id: session.id,
-			userId: session.userId,
-			expiresAt: session.expiresAt
-		}
-	};
+	// Bind ke User-Agent/IP
+	if (session.userAgent !== currentUA || session.ip !== currentIP) {
+		await db.session.delete({ where: { id: tokenHash } });
+		return { user: null, session: null };
+	}
+
+	// Rolling expiration
+	const newExpiry = getExpiryDate();
+	await db.session.update({
+		where: { id: tokenHash },
+		data: { expiresAt: newExpiry }
+	});
+
+	return { user: session.user, session: { id: tokenHash, userId: session.userId, expiresAt: newExpiry } };
 }
 
 /**
- * Menghapus sesi dari database (untuk logout).
- * @param sessionId - ID sesi yang akan dihapus.
+ * Logout sesi tertentu.
  */
-export async function invalidateSession(sessionId: string) {
-	await db.session.delete({
-		where: {
-			id: sessionId
-		}
-	});
+export async function invalidateSession(rawToken: string) {
+	const tokenHash = hashToken(rawToken);
+	await db.session.deleteMany({ where: { id: tokenHash } });
+}
+
+/**
+ * Hapus semua sesi milik user (misalnya setelah reset password).
+ */
+export async function invalidateAllSessions(userId: string) {
+	await db.session.deleteMany({ where: { userId } });
 }
 
 // --- MANAJEMEN PASSWORD ---
 
-const argon2id = new Argon2id();
-
-/**
- * Meng-hash password mentah menjadi string yang aman.
- * @param password - Password yang akan di-hash.
- * @returns Hash password.
- */
 export async function hashPassword(password: string) {
 	return await argon2id.hash(password);
 }
 
-/**
- * Memverifikasi apakah password mentah cocok dengan hash.
- * @param passwordHash - Hash dari database.
- * @param password - Password yang dimasukkan pengguna.
- * @returns true jika cocok, false jika tidak.
- */
-export async function verifyPassword(passwordHash: string, password: string) {
-	return await argon2id.verify(passwordHash, password);
+export async function verifyPassword(hash: string, password: string) {
+	return await argon2id.verify(hash, password);
 }
+
+// --- RATE LIMIT LOGIN (basic) ---
+export async function registerLoginAttempt(userId: string) {
+	const now = new Date();
+	await db.loginAttempt.create({ data: { userId, createdAt: now } });
+}
+
+export async function isLoginBlocked(userId: string) {
+	const cutoff = new Date(Date.now() - 15 * 60 * 1000); // 15 menit
+	const attempts = await db.loginAttempt.count({
+		where: { userId, createdAt: { gte: cutoff } }
+	});
+	return attempts >= LOGIN_ATTEMPT_LIMIT;
+}
+
+/**
+ * ⚠️ CATATAN PENTING:
+ * Saat mengirim cookie sesi, gunakan opsi:
+ * - HttpOnly: true
+ * - Secure: true
+ * - SameSite: 'Strict'
+ * - maxAge: 30 hari
+ * dan gunakan header `Set-Cookie` dengan `rawToken`.
+ */
