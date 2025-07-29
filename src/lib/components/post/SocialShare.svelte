@@ -2,22 +2,61 @@
   export let url: string;
   export let title: string;
 
+  let copied = false;
+
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(url);
+      copied = true;
+      setTimeout(() => (copied = false), 2000);
+    } catch (err) {
+      console.error("Gagal menyalin link:", err);
+    }
+  };
+
   const platforms = [
-    { name: 'Facebook', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M14 13.5h2.5l1-4H14v-2c0-1.03 0-2 2-2h1.5V2.14c-.326-.043-1.557-.14-2.857-.14C11.928 2 10 3.657 10 6.7v2.8H7v4h3V22h4z"/></svg>', href: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, color: 'bg-[#1877F2] hover:bg-[#166fe5]' },
-    { name: 'X/Twitter', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26l8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zM17.08 19.54h1.833L7.084 4.126H5.117z"/></svg>', href: `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`, color: 'bg-[#1D1D1D] hover:bg-[#000]' },
-    { name: 'WhatsApp', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M16.75 13.96c.25.13.43.2.5.28.08.08.13.28.1.53-.03.25-.5.7-.7.93-.2.23-.45.28-.73.28-.25 0-.5-.05-.75-.28-.25-.23-1.13-1.05-2.25-2.28-1.03-1.13-1.7-2.28-1.95-2.6-.25-.3-.03-.5.18-.7.2-.2.43-.5.6-.7.15-.18.2-.25.3-.43.08-.15.05-.33 0-.5-.05-.18-.7-1.7-1-2.3-.28-.6-.5-.5-.7-.5-.2 0-.43.05-.6.05-.2 0-.5.23-.7.45-.23.2-.88.85-1.13 1.63-.25.78-.25 1.5.05 2.25.3.75.93 1.63 2.28 2.95 1.7 1.6 2.8 2.15 3.8 2.4 1.03.28 1.83.25 2.45.15.65-.1 1.03-.4 1.18-.78.15-.38.15-.75.1-.95-.05-.2-.18-.38-.4-.53z"/></svg>', href: `https://api.whatsapp.com/send?text=${encodeURIComponent(title + ' ' + url)}`, color: 'bg-[#25D366] hover:bg-[#1ebe57]' },
-    { name: 'LinkedIn', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M6.94 5a2 2 0 1 1-4-.002a2 2 0 0 1 4 .002zM7 8.48H3V21h4V8.48zm6.32 0H9.34V21h3.94v-6.57c0-3.66 4.77-4 4.77 0V21H22v-7.93c0-6.17-7.06-5.94-8.72-2.91z"/></svg>', href: `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(url)}`, color: 'bg-[#0A66C2] hover:bg-[#095ab0]' },
-    { name: 'Threads', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M14.12 2.342c-2.26.263-4.14.86-5.65 2.233C6.73 6.09 6.2 8.35 6.2 11.41v.83c0 .88-.03 1.6-.1 2.13-.07.53-.17.92-.3 1.17-.13.25-.3.4-.5.45-.2.05-.45 0-.75-.15l-.6-.3c-.25-.15-.45-.25-.6-.3l-1.35-.65c-.2-.1-.35-.05-.45.1s-.15.35-.15.55v.9c.1.15.25.25.45.3l1.35.65c.2.1.4.2.6.3l.6.3c.3.15.6.2.9.2.95 0 1.7-.266 2.25-.8.55-.534.82-1.3.82-2.3v-.68c0-.3-.02-.633-.05-1s-.05-.7-.05-1v-1.2c0-2.8.43-4.9 1.3-6.3.87-1.4 2.2-2.1 4-2.1.8 0 1.52.12 2.15.35.63.23 1.17.62 1.6 1.15.43.53.65 1.15.65 1.85s-.22 1.3-.65 1.85c-.43.53-1 .92-1.8 1.15-.7.2-1.5.17-2.4-.1-.9-.27-1.7-.7-2.4-1.25-.7-.55-1.2-1.25-1.5-2.1-.2-.6-.2-1.25-.05-1.95.1-.45.3-.85.55-1.2.25-.35.5-.6.75-.75s.5-.25.75-.25.5.05.75.25c.25.2.5.45.75.75.25.3.45.65.6.95.15.3.2.65.2 1s-.07 1.25-.2 1.85c-.13.6-.35 1.15-.65 1.65-.3.5-.7.9-1.2 1.2-.5.3-1.05.5-1.65.6-.6.1-1.2.1-1.8.05l-1-.1v-2.1c.45.05.88.08 1.3.08.85 0 1.6-.17 2.25-.5.65-.33 1.15-.8 1.5-1.4.35-.6.52-1.3.52-2.1s-.17-1.5-.52-2.1c-.35-.6-.85-1.05-1.5-1.35s-1.4-.45-2.25-.45c-1.55 0-2.8.433-3.75 1.3-1 .867-1.5 2.1-1.5 3.7v1.25c0 .35.02.733.05 1.15.03.417.05.8.05 1.15v.65c0 1.2-.3 2.15-.9 2.85s-1.4.95-2.4.8c-.35-.05-.65-.2-.9-.4L3.8 18.3c-.2-.1-.35-.2-.45-.3l-1.35-.65c-.2-.1-.35-.15-.45-.15-.15 0-.27.05-.35.15s-.15.25-.15.45v.9c.1.15.25.25.45.3l1.35.65c.2.1.4.2.6.3l.6.3c.3.15.6.2.9.2.95 0 1.7-.267 2.25-.8.55-.533.82-1.3.82-2.3v-.68c0-.3-.02-.633-.05-1s-.05-.7-.05-1v-1.2c0-2.8.43-4.9 1.3-6.3.87-1.4 2.2-2.1 4-2.1.8 0 1.52.12 2.15.35.63.23 1.17.62 1.6 1.15.43.53.65 1.15.65 1.85s-.22 1.3-.65 1.85c-.43.53-1 .92-1.8 1.15-.7.2-1.5.17-2.4-.1-.9-.27-1.7-.7-2.4-1.25-.7-.55-1.2-1.25-1.5-2.1-.2-.6-.2-1.25-.05-1.95.1-.45.3-.85.55-1.2.25-.35.5-.6.75-.75s.5-.25.75-.25.5.05.75.25c.25.2.5.45.75.75.25.3.45.65.6.95.15.3.2.65.2 1s-.07 1.25-.2 1.85c-.13.6-.35 1.15-.65 1.65-.3.5-.7.9-1.2 1.2-.5.3-1.05.5-1.65.6-.6.1-1.2.1-1.8.05l-1-.1v-2.1c.45.05.88.08 1.3.08.85 0 1.6-.17 2.25-.5.65-.33 1.15-.8 1.5-1.4.35-.6.52-1.3.52-2.1s-.17-1.5-.52-2.1c-.35-.6-.85-1.05-1.5-1.35s-1.4-.45-2.25-.45c-1.55 0-2.8.433-3.75 1.3-1 .867-1.5 2.1-1.5 3.7v1.25c0 .35.02.733.05 1.15.03.417.05.8.05 1.15v.65c0 1.2-.3 2.15-.9 2.85s-1.4.95-2.4.8z"/></svg>', href: `https://www.threads.net/share?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`, color: 'bg-[#000000] hover:bg-[#222]' },
-    { name: 'Tumblr', icon: '<svg fill="#000000" height="24px" width="24px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
-	 viewBox="-143 145 512 512" xml:space="preserve">
-<path d="M-143,145v512h512V145H-143z M185.2,515H185c-11,5.1-20.8,8.8-29.7,10.8c-8.9,2.1-18.5,3.1-28.8,3.1
-	c-11.7,0-22.1-1.5-31-4.4c-9-3-16.7-7.2-23-12.6c-6.4-5.5-10.8-11.3-13.2-17.5c-2.5-6.2-3.7-15.1-3.7-26.8v-89.8H27.3v-36.2
-	c10.1-3.3,18.7-8,25.9-14.1c7.2-6.1,12.9-13.4,17.3-22c4.3-8.5,7.3-19.4,9-32.6h36.4v64.7h60.7v40.2h-60.7v65.6
-	c0,14.9,0.8,24.4,2.4,28.6c1.6,4.2,4.5,7.6,8.8,10.1c5.6,3.4,12.1,5.1,19.4,5.1c13,0,25.8-4.2,38.7-12.6V515z"/>
-</svg>', href: `http://www.tumblr.com/share/link?url=${encodeURIComponent(url)}&name=${encodeURIComponent(title)}`, color: 'bg-[#36465D] hover:bg-[#2f3d52]' },
-    { name: 'Flipboard', icon: '<svg width="24px" height="24px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-  <path d="M0 0v32h32v-32zM25.599 12.803h-6.401v6.395h-6.395v6.401h-6.401v-19.197h19.197z"/>
-</svg>', href: `https://share.flipboard.com/flipit/load?url=${encodeURIComponent(url)}`, color: 'bg-[#E12828] hover:bg-[#c92424]' },
+    { 
+      name: 'Facebook', 
+      icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M22 12a10 10 0 1 0-11.5 9.9v-7h-2v-3h2v-2.3c0-2 1.2-3.1 3-3.1.9 0 1.8.1 1.8.1v2h-1c-1 0-1.3.6-1.3 1.2V12h2.2l-.4 3h-1.8v7A10 10 0 0 0 22 12"/></svg>', 
+      href: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, 
+      color: 'bg-[#1877F2] hover:bg-[#166fe5]' 
+    },
+    { 
+      name: 'X (Twitter)', 
+      icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M3 3h4.6l5.2 7.6L18.2 3H21l-7.1 9.9L21 21h-4.6l-5.4-7.9L5.4 21H3l7.5-10.3z"/></svg>', 
+      href: `https://x.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`, 
+      color: 'bg-[#000000] hover:bg-[#222]' 
+    },
+    { 
+      name: 'WhatsApp', 
+      icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M16.6 13.6c-.3-.1-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8.9-1 .9s-.5 0-.8-.4c-.3-.3-1.3-1.1-2.5-2.2-1-.9-1.7-2-1.9-2.3-.2-.3 0-.5.2-.7.2-.2.5-.6.7-.8.2-.3.3-.5.5-.8.2-.3.1-.5 0-.8-.1-.3-.7-1.7-1-2.3-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.1-1.2 2.6s1.2 3 1.4 3.2c.2.3 2.3 3.5 5.6 4.9.8.3 1.5.5 2 .6.8.2 1.5.2 2.1.1.6-.1 1.7-.7 1.9-1.3.2-.6.2-1.1.2-1.2-.1-.2-.3-.3-.6-.4zM12 2C6.5 2 2 6.5 2 12c0 1.7.4 3.3 1.2 4.7L2 22l5.4-1.2c1.3.7 2.8 1.1 4.6 1.1 5.5 0 10-4.5 10-10S17.5 2 12 2z"/></svg>', 
+      href: `https://wa.me/?text=${encodeURIComponent(title + ' ' + url)}`, 
+      color: 'bg-[#25D366] hover:bg-[#1ebe57]' 
+    },
+    { 
+      name: 'LinkedIn', 
+      icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M19 3A2 2 0 0 1 21 5v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm-9.5 14v-6H7v6zM7 9h.02a1 1 0 1 0-.02 0zm9 8v-3.5c0-2-1-3-2.3-3a2 2 0 0 0-1.7.9V11H10v6h2v-3.5a1 1 0 0 1 2-.5V17z"/></svg>', 
+      href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, 
+      color: 'bg-[#0A66C2] hover:bg-[#095ab0]' 
+    },
+    { 
+      name: 'Threads', 
+      icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 2c4.4 0 8 3.6 8 8s-3.6 8-8 8-8-3.6-8-8 3.6-8 8-8zm-.5 3c-2.5 0-4.5 1.8-4.5 4.1 0 1.5.8 2.7 2 3.3l-.7 1.3c-.6-.3-1.6-1.1-1.6-1.1s.2 1.8 2.2 2.9c-.6.8-1.6 1.3-2.9 1.3-.3 0-.6 0-.9-.1.8 1.3 2.2 2.2 3.9 2.2 2.5 0 4.5-1.8 4.5-4.1 0-1.5-.8-2.7-2-3.3l.7-1.3c.6.3 1.6 1.1 1.6 1.1s-.2-1.8-2.2-2.9c.6-.8 1.6-1.3 2.9-1.3.3 0 .6 0 .9.1-.8-1.3-2.2-2.2-3.9-2.2z"/></svg>', 
+      href: `https://www.threads.net/intent/post?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`, 
+      color: 'bg-[#000000] hover:bg-[#222]' 
+    },
+    { 
+      name: 'Tumblr', 
+      icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M14.6 15.3c-.4.2-.8.3-1.2.3-.5 0-.9-.1-1.2-.4-.3-.2-.5-.5-.6-.9-.1-.3-.1-.9-.1-1.8v-3.2h3.1V6H11V3.5l-2.4.8V6H6v3.3h2.6V15c0 1.3.3 2.3.9 3 .7.9 1.9 1.4 3.6 1.4 1 0 1.9-.2 2.8-.6z"/></svg>', 
+      href: `https://www.tumblr.com/widgets/share/tool?canonicalUrl=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}`, 
+      color: 'bg-[#36465D] hover:bg-[#2f3d52]' 
+    },
+    { 
+      name: 'Flipboard', 
+      icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32"><path fill="currentColor" d="M0 0v32h32V0zm25.6 12.8h-6.4v6.4h-6.4v6.4H6.4V6.4h19.2z"/></svg>', 
+      href: `https://share.flipboard.com/bookmarklet/popout?v=2&title=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`, 
+      color: 'bg-[#E12828] hover:bg-[#c92424]' 
+    },
   ];
 </script>
 
@@ -35,5 +74,18 @@
         <div class="w-5 h-5">{@html platform.icon}</div>
       </a>
     {/each}
+
+    <!-- Tombol Copy Link -->
+    <button 
+      on:click={copyLink} 
+      class="w-9 h-9 flex items-center justify-center rounded-full bg-gray-500 hover:bg-gray-600 text-white transform hover:-translate-y-1 transition-all duration-300"
+      title="Salin Link"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+
+    {#if copied}
+      <span class="text-xs text-green-600 font-medium">Link disalin!</span>
+    {/if}
   </div>
 </div>
