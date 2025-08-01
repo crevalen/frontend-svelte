@@ -9,11 +9,11 @@
 	import TextAlign from '@tiptap/extension-text-align';
 	import Blockquote from '@tiptap/extension-blockquote';
 	import HorizontalRule from '@tiptap/extension-horizontal-rule';
-	import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 	import { BubbleMenu } from '@tiptap/extension-bubble-menu';
 	
-	// PERBAIKAN: Impor yang benar untuk lowlight dan highlight.js
-	import lowlight from 'lowlight';
+	// **PERBAIKAN FINAL UNTUK LOWLIGHT**
+	import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
+	import { createLowlight } from 'lowlight';
 	import css from 'highlight.js/lib/languages/css';
 	import js from 'highlight.js/lib/languages/javascript';
 	import ts from 'highlight.js/lib/languages/typescript';
@@ -21,9 +21,9 @@
 
 	// Dependensi untuk Tabel
 	import { Table } from '@tiptap/extension-table';
-	import TableCell from '@tiptap/extension-table-cell';
-	import TableHeader from '@tiptap/extension-table-header';
-	import TableRow from '@tiptap/extension-table-row';
+	import { TableCell } from '@tiptap/extension-table-cell';
+	import { TableHeader } from '@tiptap/extension-table-header';
+	import { TableRow } from '@tiptap/extension-table-row';
 
 	import {
 		Bold, Italic, Link2, Pilcrow, Heading2, Heading3, Heading4, AlignLeft,
@@ -31,10 +31,9 @@
 		Code, Image as ImageIcon, Table2, Columns3, Rows3, Trash2
 	} from 'lucide-svelte';
 
-	lowlight.registerLanguage('html', html);
-	lowlight.registerLanguage('css', css);
-	lowlight.registerLanguage('javascript', js);
-	lowlight.registerLanguage('typescript', ts);
+	// Inisialisasi lowlight dengan cara yang benar
+	const lowlight = createLowlight();
+	lowlight.register({ html, css, js, ts });
 	
 	export let value: string = '';
 
