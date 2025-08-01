@@ -1,5 +1,3 @@
-// src/routes/+page.svelte
-
 <script lang="ts">
   import type { PageData } from './$types';
   import FeaturedPostCard from '$lib/components/post/FeaturedPostCard.svelte';
@@ -67,20 +65,20 @@
 
     <section class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
       <div class="lg:col-span-2">
-        <div class="flex justify-between items-center mb-6 border-b-2 border-gray-400 dark:border-gray-600 pb-2">
-         <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Artikel Terbaru</h2>
-        </div>
-        <div class="divide-y divide-gray-200 dark:divide-slate-700/50">
-          {#each homepageData.paginatedPosts as post}
-            <div class="py-8"><ListPostCard {post} /></div>
-          {:else}
-             <p class="text-center py-10 text-gray-500">Tidak ada artikel untuk ditampilkan.</p>
-          {/each}
-        </div>
-        {#if homepageData.pagination.totalPages > 1}
-          <Pagination currentPage={homepageData.pagination.currentPage} totalPages={homepageData.pagination.totalPages} />
-        {/if}
+  <div class="flex justify-between items-center mb-6 border-b-2 border-gray-400 dark:border-gray-600 pb-2">
+   <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Artikel Terbaru</h2>
+  </div>
+  <div class="divide-y divide-gray-200 dark:divide-slate-700/50">
+    {#each homepageData.paginatedPosts as post (post.id)}
+      <div class="py-8">
+        <ListPostCard {post} />
       </div>
+    {/each}
+  </div>
+  {#if homepageData.pagination.totalPages > 1}
+    <Pagination currentPage={homepageData.pagination.currentPage} totalPages={homepageData.pagination.totalPages} />
+  {/if}
+</div>
 
       <div class="lg:col-span-1">
         <div class="sticky top-24">
