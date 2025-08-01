@@ -9,43 +9,37 @@
   }
 </script>
 
-<!-- BACKDROP -->
 <div
   transition:fade={{ duration: 300 }}
-  class="fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
+  class="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm"
   aria-hidden="true"
+  on:click={() => handleResponse(false)}
 ></div>
 
-<!-- NOTIFICATION CARD -->
 <div
-  transition:fly={{ y: -10, duration: 300, delay: 100 }}
-  class="fixed top-8 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-md"
+  transition:fly={{ y: -20, duration: 400, delay: 100 }}
+  class="fixed top-6 left-1/2 z-50 w-[calc(100%-2rem)] max-w-md -translate-x-1/2"
 >
-  <div class="rounded-xl bg-white dark:bg-slate-900 shadow-xl border border-gray-200 dark:border-slate-700 p-6 text-center transition-all">
-    
-    <!-- TITLE -->
+  <div class="rounded-xl border border-slate-200/50 dark:border-slate-700/50 bg-white dark:bg-slate-800 p-6 shadow-xl">
     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-      Aktifkan Notifikasi?
+      Jangan lewatkan update terbaru
     </h3>
-    
-    <!-- DESCRIPTION -->
-    <p class="mt-2 text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-      Dapatkan update artikel terbaru langsung ke perangkatmu. Kami tidak akan spam.
+    <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">
+      Aktifkan notifikasi untuk menerima artikel langsung di perangkat Anda. Kami tidak akan mengirim spam.
     </p>
-
-    <!-- ACTION BUTTONS -->
-    <div class="mt-5 flex justify-center gap-4">
-      <button
-        on:click={() => handleResponse(false)}
-        class="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-md transition"
-      >
-        Nanti Saja
-      </button>
+    
+    <div class="mt-5 flex gap-3">
       <button
         on:click={() => handleResponse(true)}
-        class="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white text-sm font-medium rounded-md transition-colors"
+        class="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-cyan-600 hover:bg-cyan-700 active:scale-95 transition-all"
       >
-        Aktifkan
+        Aktifkan Notifikasi
+      </button>
+      <button
+        on:click={() => handleResponse(false)}
+        class="px-4 py-2 rounded-lg text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-700/60 transition-colors"
+      >
+        Nanti Saja
       </button>
     </div>
   </div>

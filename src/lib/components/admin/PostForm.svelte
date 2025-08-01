@@ -251,7 +251,7 @@
                     <div class="flex items-center">
                         <img src="https://www.google.com/s2/favicons?domain=crevalen.xyz" alt="Favicon" class="h-6 w-6 mr-2">
                         <div>
-                            <p class="font-semibold text-slate-800">Crevalen XYZ</p>
+                            <p class="font-semibold text-slate-800">Crevalen</p>
                             <p class="text-xs text-slate-500">
                                 https://www.crevalen.xyz › {selectedCategories[0]?.name.toLowerCase() || 'kategori'} › {slug || '...'}
                             </p>
