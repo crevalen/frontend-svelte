@@ -7,7 +7,6 @@
 	import { CheckCircle, ExclamationTriangle, XMark, Plus } from '@steeze-ui/heroicons';
 
 	type Taxonomy = { id: string; name: string };
-
 	// Props
 	export let title = '';
 	export let slug = '';
@@ -41,8 +40,9 @@
 	let newTagName = '';
 	let categoryString: string;
 	let tagString: string;
-
 	let formElement: HTMLFormElement;
+    let isSlugManuallyEdited = false;
+
 	// Logika Notifikasi
 	$: if (form) {
 		if (form.success && form.message) {
@@ -53,11 +53,25 @@
 		form = null;
 		setTimeout(() => (notification = null), 4000);
 	}
+    
+    // Slugify Otomatis
+    function slugify(text: string) {
+        return text
+            .toString()
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, '-') // Ganti spasi dengan -
+            .replace(/[^\w-]+/g, '') // Hapus karakter yang tidak valid
+            .replace(/--+/g, '-'); // Ganti beberapa - dengan satu -
+    }
+
+    $: if (!isSlugManuallyEdited && browser) {
+        slug = slugify(title);
+    }
 
 	// Logika lain-lain
 	$: categoryString = selectedCategories.map((c) => c.name).join(',');
 	$: tagString = selectedTags.map((t) => t.name).join(',');
-
 	function handleImageSelect(e: Event) {
 		const input = e.target as HTMLInputElement;
 		if (input.files && input.files[0]) {
@@ -110,7 +124,6 @@
 	}
 	function handleSave() {
         if (!formElement) return;
-
         // Langkah krusial: Secara manual sinkronkan nilai dari variabel 'content'
         // ke dalam hidden input sebelum form disubmit. Ini menjamin
         // data terbaru dari editor yang akan dikirim.
@@ -123,6 +136,49 @@
         formElement.requestSubmit();
     }
 </script>
+
+<style>
+    /* Toggle Switch Styles */
+    .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 28px;
+    }
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 28px;
+    }
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 20px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+    input:checked + .slider {
+        background-color: #2563eb;
+    }
+    input:checked + .slider:before {
+        transform: translateX(22px);
+    }
+</style>
 
 {#if notification}
 	<div
@@ -162,7 +218,7 @@
 
 	<div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
 		<div class="flex flex-col gap-y-6 lg:col-span-2">
-			<div class="rounded-lg border border-slate-50 bg-slate-50">
+			<div class="rounded-lg border border-slate-50 bg-slate-50 p-6">
 				<label for="title" class="mb-2 block text-sm font-medium text-slate-900">Judul</label>
 				<input
 					id="title"
@@ -170,10 +226,11 @@
 					type="text"
 					required
 					bind:value={title}
-					class="input-text text-lg"
+                    on:input={() => isSlugManuallyEdited = false}
+					class="input-text text-lg w-full rounded-lg border-slate-300 bg-white p-3 text-slate-900 focus:border-blue-500 focus:ring-blue-500"
 				/>
 			</div>
-			<div class="rounded-lg border border-slate-50 bg-slate-50">
+			<div class="rounded-lg border border-slate-50 bg-slate-50 p-6">
 				<label for="slug" class="mb-2 block text-sm font-medium text-slate-900">Slug</label>
 				<input
 					id="slug"
@@ -181,22 +238,29 @@
 					type="text"
 					required
 					bind:value={slug}
-					class="input-text"
+                    on:input={() => isSlugManuallyEdited = true}
+					class="input-text w-full rounded-lg border-slate-300 bg-white p-3 text-slate-900 focus:border-blue-500 focus:ring-blue-500"
 				/>
 			</div>
 			<div class="rounded-lg border border-slate-900 bg-white p-2 shadow-sm">
 				<CustomEditor bind:value={content} />
 			</div>
 			<div class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-				<h3 class="mb-4 text-sm font-medium text-slate-500">Pratinjau di Google</h3>
-				<div class="font-sans">
-					<p class="text-sm text-slate-600">
-						<span class="font-medium">https://www.crevalen.xyz</span> › Kategori › {slug || '...'}
-					</p>
-					<h2 class="truncate text-xl text-blue-700 hover:underline">
+                <h3 class="mb-4 text-sm font-medium text-slate-500">Pratinjau di Google</h3>
+                <div class="font-sans border border-slate-200 rounded-lg p-4">
+                    <div class="flex items-center">
+                        <img src="https://www.google.com/s2/favicons?domain=crevalen.xyz" alt="Favicon" class="h-6 w-6 mr-2">
+                        <div>
+                            <p class="font-semibold text-slate-800">Crevalen XYZ</p>
+                            <p class="text-xs text-slate-500">
+                                https://www.crevalen.xyz › {selectedCategories[0]?.name.toLowerCase() || 'kategori'} › {slug || '...'}
+                            </p>
+                        </div>
+                    </div>
+					<h2 class="mt-2 text-xl text-blue-700 hover:underline truncate">
 						{metaTitle || title || 'Judul Postingan Anda'}
 					</h2>
-					<p class="mt-1 text-sm text-slate-500">
+					<p class="mt-1 text-sm text-slate-600">
 						{metaDescription ||
 							content.replace(/<[^>]*>/g, ' ').substring(0, 160) ||
 							'Deskripsi akan muncul di sini...'}
@@ -207,17 +271,22 @@
 
 		<div class="flex flex-col gap-y-6 lg:col-span-1">
 			<div class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-				<h3 class="mb-4 font-semibold text-slate-800">Publikasi</h3>
-				<div class="flex items-center">
-					<input
-						id="published"
-						name="published"
-						type="checkbox"
-						bind:checked={published}
-						class="h-4 w-4 rounded border-slate-300 bg-slate-100 text-blue-600 focus:ring-blue-500"
-					/>
-					<label for="published" class="ms-3 text-sm font-medium text-slate-700">Publikasikan</label>
-				</div>
+                <h3 class="mb-4 font-semibold text-slate-800">Publikasi</h3>
+                <div class="flex items-center justify-between">
+                    <label for="published" class="font-medium text-slate-700">Status</label>
+                    <label class="toggle-switch">
+                        <input
+                            id="published"
+                            name="published"
+                            type="checkbox"
+                            bind:checked={published}
+                        />
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <p class="text-xs text-slate-500 mt-2">
+                    {published ? 'Postingan akan terlihat oleh publik.' : 'Postingan masih dalam bentuk draf.'}
+                </p>
 			</div>
 			<div class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
 				<h3 class="mb-4 font-semibold text-slate-800">Featured Image</h3>
@@ -414,4 +483,3 @@
 	<input type="hidden" name="categories" value={categoryString} />
 	<input type="hidden" name="tags" value={tagString} />
 </form>
-
