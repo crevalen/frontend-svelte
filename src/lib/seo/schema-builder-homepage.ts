@@ -1,11 +1,11 @@
-// src/lib/seo/schema-builder-homepage.ts
-
 import { PUBLIC_SITE_URL } from '$env/static/public';
 
 type Post = {
   slug: string;
   title: string;
   categories: { slug: string }[];
+  author?: { displayName: string };
+  featuredImage?: { url: string };
 };
 
 export function buildHomepageSchema({
@@ -29,10 +29,54 @@ export function buildHomepageSchema({
         item: {
           '@type': 'Article',
           name: post.title,
-          url: `${PUBLIC_SITE_URL}/${post.categories?.[0]?.slug ?? 'post'}/${post.slug}`
+          headline: post.title,
+          url: `${PUBLIC_SITE_URL}/${post.categories?.[0]?.slug ?? 'post'}/${post.slug}`,
+          author: post.author?.displayName
+            ? {
+                '@type': 'Person',
+                name: post.author.displayName
+              }
+            : undefined,
+          image: post.featuredImage?.url
+            ? {
+                '@type': 'ImageObject',
+                url: post.featuredImage.url
+              }
+            : undefined,
+          mainEntityOfPage: {
+            '@type': 'WebPage',
+            '@id': `${PUBLIC_SITE_URL}/`
+          }
         }
       }))
     };
+  }
+
+  // Artikel individual untuk SEO optimal
+  function createArticleSchemas(posts: Post[]) {
+    return posts.map((post) => ({
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: post.title,
+      name: post.title,
+      url: `${PUBLIC_SITE_URL}/${post.categories?.[0]?.slug ?? 'post'}/${post.slug}`,
+      author: post.author?.displayName
+        ? {
+            '@type': 'Person',
+            name: post.author.displayName
+          }
+        : undefined,
+      image: post.featuredImage?.url
+        ? {
+            '@type': 'ImageObject',
+            url: post.featuredImage.url
+          }
+        : undefined,
+      mainEntityOfPage: {
+        '@type': 'WebPage',
+        '@id': `${PUBLIC_SITE_URL}/`
+      }
+    }));
   }
 
   const schemas = [
@@ -87,9 +131,14 @@ export function buildHomepageSchema({
         }
       ]
     },
+
+    // ItemList (daftar artikel)
     createItemListSchema('Artikel Populer di Crevalen', popularPosts),
     createItemListSchema('Tips Keuangan Terbaru', gridPosts),
-    createItemListSchema('Kisah & Cerita Finansial', storyPosts)
+    createItemListSchema('Kisah & Cerita Finansial', storyPosts),
+
+    // Article (per artikel utama untuk SEO maksimal)
+    ...createArticleSchemas([...popularPosts, ...gridPosts, ...storyPosts])
   ];
 
   return schemas;
