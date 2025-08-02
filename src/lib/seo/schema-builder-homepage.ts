@@ -4,6 +4,7 @@ import { PUBLIC_SITE_URL } from '$env/static/public';
 
 type Post = {
   slug: string;
+  title: string;
   categories: { slug: string }[];
 };
 
@@ -25,7 +26,11 @@ export function buildHomepageSchema({
       itemListElement: posts.map((post, index) => ({
         '@type': 'ListItem',
         position: index + 1,
-        url: `${PUBLIC_SITE_URL}/${post.categories?.[0]?.slug ?? 'post'}/${post.slug}`
+        item: {
+          '@type': 'Article',
+          name: post.title,
+          url: `${PUBLIC_SITE_URL}/${post.categories?.[0]?.slug ?? 'post'}/${post.slug}`
+        }
       }))
     };
   }
