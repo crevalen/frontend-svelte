@@ -13,7 +13,7 @@ export default {
       typography: ({ theme }) => ({
         DEFAULT: {
           css: {
-            maxWidth: '50ch',
+            maxWidth: '55ch',
             fontSize: '16px',
             lineHeight: '1.6',
             p: {
