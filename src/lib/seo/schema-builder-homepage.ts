@@ -37,12 +37,11 @@ export function buildHomepageSchema({
           name: post.title,
           headline: post.title,
           url: `${PUBLIC_SITE_URL}/${post.categories?.[0]?.slug ?? 'post'}/${post.slug}`,
-          author: post.author?.displayName
-            ? {
-                '@type': 'Person',
-                name: post.author.displayName
-              }
-            : undefined,
+          author: {
+          '@type': 'Person',
+          name: post.author?.displayName || post.author?.username || 'Redaksi',
+          url: post.author?.username ? `${PUBLIC_SITE_URL}/penulis/${post.author.username}` : undefined
+        },
           image: post.featuredImage?.url
             ? {
                 '@type': 'ImageObject',
@@ -68,13 +67,11 @@ export function buildHomepageSchema({
       headline: post.title,
       name: post.title,
       url: `${PUBLIC_SITE_URL}/${post.categories?.[0]?.slug ?? 'post'}/${post.slug}`,
-      author: post.author?.displayName
-        ? {
-            '@type': 'Person',
-            name: post.author.displayName,
-            url: `${PUBLIC_SITE_URL}/penulis/${post.author.username}`
-          }
-        : undefined,
+      author: {
+          '@type': 'Person',
+          name: post.author?.displayName || post.author?.username || 'Redaksi',
+          url: post.author?.username ? `${PUBLIC_SITE_URL}/penulis/${post.author.username}` : undefined
+        },
       image: post.featuredImage?.url
         ? {
             '@type': 'ImageObject',
