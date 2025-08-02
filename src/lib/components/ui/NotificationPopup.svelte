@@ -13,7 +13,7 @@
   transition:fly={{ x: -20, duration: 400, delay: 300 }}
   class="fixed top-5 left-5 z-50 w-[calc(100%-2.5rem)] max-w-sm"
 >
-  <div class="flex items-start gap-4 rounded-lg bg-white p-5 shadow-lg shadow-slate-900/10">
+  <div class="flex items-start gap-4 rounded-lg bg-white p-5 shadow-xl shadow-slate-900/10">
     <div class="flex-shrink-0 text-slate-500">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -40,13 +40,13 @@
       <div class="mt-5 flex gap-3">
         <button
           on:click={() => handleResponse(true)}
-          class="w-full rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-slate-700 active:scale-95"
+          class="cursor-pointer w-full rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-slate-700 active:scale-95"
         >
           Aktifkan
         </button>
         <button
           on:click={() => handleResponse(false)}
-          class="w-full rounded-md bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-200"
+          class="cursor-pointer w-full rounded-md bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-200"
         >
           Nanti Saja
         </button>
