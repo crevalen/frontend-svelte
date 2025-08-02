@@ -23,25 +23,25 @@ export default {
             h1: {
               fontSize: '26px',
               textAlign: 'left', 
-              wordBreak: 'break-word', 
+              
             },
             h2: {
-              fontSize: '22px',
+              fontSize: '24px',
               textAlign: 'left', 
-              wordBreak: 'break-word', 
+              
             },
             h3: {
               fontSize: '20px',
               textAlign: 'left', 
-              wordBreak: 'break-word', 
+              
             },
             h4: { 
               textAlign: 'left',
-              wordBreak: 'break-word',
+              
             },
             h5: { 
               textAlign: 'left',
-              wordBreak: 'break-word',
+              
             },
             ul: {
               listStyleType: 'square',
@@ -81,25 +81,25 @@ export default {
             h1: {
               fontSize: '36px',
               textAlign: 'left', 
-              wordBreak: 'break-word', 
+              
             },
             h2: {
               fontSize: '28px',
               textAlign: 'left', 
-              wordBreak: 'break-word', 
+              
             },
             h3: {
               fontSize: '24px',
               textAlign: 'left', 
-              wordBreak: 'break-word', 
+              
             },
              h4: { 
               textAlign: 'left',
-              wordBreak: 'break-word',
+              
             },
             h5: { 
               textAlign: 'left',
-              wordBreak: 'break-word',
+              
             },
             ul: {
               listStyleType: 'square',
