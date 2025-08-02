@@ -31,7 +31,7 @@
 		Code, Image as ImageIcon, Table2, Columns3, Rows3, Trash2
 	} from 'lucide-svelte';
 
-	// Inisialisasi lowlight dengan cara yang benar
+	// Inisialisasi lowlight
 	const lowlight = createLowlight();
 	lowlight.register({ html, css, js, ts });
 	
@@ -150,19 +150,19 @@
 			<div class="flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-900 p-2 shadow-xl">
 				<a href={editor.getAttributes('link').href} target="_blank" rel="noopener noreferrer" class="text-sm text-blue-400 hover:underline">{editor.getAttributes('link').href}</a>
 				<div class="h-4 w-px bg-slate-700"></div>
-				<button on:click={openLinkEditor} class="text-sm text-slate-300 hover:text-white">Edit</button>
+				<button type="button" on:click={openLinkEditor} class="text-sm text-slate-300 hover:text-white">Edit</button>
 			</div>
 		{/if}
 		{#if activeState.table}
 			<div class="flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-900 p-1 shadow-xl">
-				<button on:click={() => editor.chain().focus().addColumnBefore().run()} title="Add Column Before"><Columns3 size={16}/></button>
-				<button on:click={() => editor.chain().focus().deleteColumn().run()} title="Delete Column"><Trash2 size={16}/></button>
+				<button type="button" on:click={() => editor.chain().focus().addColumnBefore().run()} title="Add Column Before"><Columns3 size={16}/></button>
+				<button type="button" on:click={() => editor.chain().focus().deleteColumn().run()} title="Delete Column"><Trash2 size={16}/></button>
 				<div class="h-4 w-px bg-slate-700"></div>
-				<button on:click={() => editor.chain().focus().addRowBefore().run()} title="Add Row Before"><Rows3 size={16}/></button>
-				<button on:click={() => editor.chain().focus().deleteRow().run()} title="Delete Row"><Trash2 size={16}/></button>
+				<button type="button" on:click={() => editor.chain().focus().addRowBefore().run()} title="Add Row Before"><Rows3 size={16}/></button>
+				<button type="button" on:click={() => editor.chain().focus().deleteRow().run()} title="Delete Row"><Trash2 size={16}/></button>
 				<div class="h-4 w-px bg-slate-700"></div>
-				<button on:click={() => editor.chain().focus().mergeOrSplit().run()} title="Merge/Split Cells">Merge</button>
-				<button on:click={() => editor.chain().focus().deleteTable().run()} title="Delete Table" class="text-red-400"><Trash2 size={16}/></button>
+				<button type="button" on:click={() => editor.chain().focus().mergeOrSplit().run()} title="Merge/Split Cells">Merge</button>
+				<button type="button" on:click={() => editor.chain().focus().deleteTable().run()} title="Delete Table" class="text-red-400"><Trash2 size={16}/></button>
 			</div>
 		{/if}
 	{/if}
@@ -171,29 +171,29 @@
 <div class="rounded-lg border border-slate-200 bg-white shadow-sm">
 	{#if editor}
 		<div class="flex flex-wrap items-center gap-1 border-b border-slate-200 p-2">
-			<button on:click={() => editor.chain().focus().toggleBold().run()} class:is-active={activeState.bold} title="Bold"><Bold size={18} /></button>
-			<button on:click={() => editor.chain().focus().toggleItalic().run()} class:is-active={activeState.italic} title="Italic"><Italic size={18} /></button>
+			<button type="button" on:click={() => editor.chain().focus().toggleBold().run()} class:is-active={activeState.bold} title="Bold"><Bold size={18} /></button>
+			<button type="button" on:click={() => editor.chain().focus().toggleItalic().run()} class:is-active={activeState.italic} title="Italic"><Italic size={18} /></button>
 			<div class="divider"></div>
-			<button on:click={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} class:is-active={activeState.heading2} title="Heading 2"><Heading2 size={18} /></button>
-			<button on:click={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} class:is-active={activeState.heading3} title="Heading 3"><Heading3 size={18} /></button>
-			<button on:click={() => editor.chain().focus().toggleHeading({ level: 4 }).run()} class:is-active={activeState.heading4} title="Heading 4"><Heading4 size={18} /></button>
+			<button type="button" on:click={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} class:is-active={activeState.heading2} title="Heading 2"><Heading2 size={18} /></button>
+			<button type="button" on:click={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} class:is-active={activeState.heading3} title="Heading 3"><Heading3 size={18} /></button>
+			<button type="button" on:click={() => editor.chain().focus().toggleHeading({ level: 4 }).run()} class:is-active={activeState.heading4} title="Heading 4"><Heading4 size={18} /></button>
 			<div class="divider"></div>
-			<button on:click={() => editor.chain().focus().setParagraph().run()} class:is-active={!Object.values(activeState).some(v => typeof v === 'boolean' && v)} title="Paragraph"><Pilcrow size={18} /></button>
-			<button on:click={() => editor.chain().focus().toggleBlockquote().run()} class:is-active={activeState.blockquote} title="Blockquote"><Quote size={18} /></button>
+			<button type="button" on:click={() => editor.chain().focus().setParagraph().run()} title="Paragraph"><Pilcrow size={18} /></button>
+			<button type="button" on:click={() => editor.chain().focus().toggleBlockquote().run()} class:is-active={activeState.blockquote} title="Blockquote"><Quote size={18} /></button>
 			<div class="divider"></div>
-			<button on:click={() => editor.chain().focus().toggleBulletList().run()} class:is-active={activeState.bulletList} title="Bullet List"><List size={18} /></button>
-			<button on:click={() => editor.chain().focus().toggleOrderedList().run()} class:is-active={activeState.orderedList} title="Ordered List"><ListOrdered size={18} /></button>
+			<button type="button" on:click={() => editor.chain().focus().toggleBulletList().run()} class:is-active={activeState.bulletList} title="Bullet List"><List size={18} /></button>
+			<button type="button" on:click={() => editor.chain().focus().toggleOrderedList().run()} class:is-active={activeState.orderedList} title="Ordered List"><ListOrdered size={18} /></button>
 			<div class="divider"></div>
-			<button on:click={() => editor.chain().focus().setTextAlign('left').run()} class:is-active={activeState.alignLeft} title="Align Left"><AlignLeft size={18} /></button>
-			<button on:click={() => editor.chain().focus().setTextAlign('center').run()} class:is-active={activeState.alignCenter} title="Align Center"><AlignCenter size={18} /></button>
-			<button on:click={() => editor.chain().focus().setTextAlign('right').run()} class:is-active={activeState.alignRight} title="Align Right"><AlignRight size={18} /></button>
-			<button on:click={() => editor.chain().focus().setTextAlign('justify').run()} class:is-active={activeState.alignJustify} title="Align Justify"><AlignJustify size={18} /></button>
+			<button type="button" on:click={() => editor.chain().focus().setTextAlign('left').run()} class:is-active={activeState.alignLeft} title="Align Left"><AlignLeft size={18} /></button>
+			<button type="button" on:click={() => editor.chain().focus().setTextAlign('center').run()} class:is-active={activeState.alignCenter} title="Align Center"><AlignCenter size={18} /></button>
+			<button type="button" on:click={() => editor.chain().focus().setTextAlign('right').run()} class:is-active={activeState.alignRight} title="Align Right"><AlignRight size={18} /></button>
+			<button type="button" on:click={() => editor.chain().focus().setTextAlign('justify').run()} class:is-active={activeState.alignJustify} title="Align Justify"><AlignJustify size={18} /></button>
 			<div class="divider"></div>
-			<button on:click={openLinkEditor} class:is-active={activeState.link} title="Add Link"><Link2 size={18} /></button>
-			<button on:click={() => showImageModal = true} title="Add Image"><ImageIcon size={18} /></button>
-			<button on:click={() => editor.chain().focus().setHorizontalRule().run()} title="Horizontal Rule"><Minus size={18} /></button>
-			<button on:click={() => editor.chain().focus().toggleCodeBlock().run()} class:is-active={activeState.codeBlock} title="Code Block"><Code size={18} /></button>
-			<button on:click={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()} title="Add Table"><Table2 size={18}/></button>
+			<button type="button" on:click={openLinkEditor} class:is-active={activeState.link} title="Add Link"><Link2 size={18} /></button>
+			<button type="button" on:click={() => showImageModal = true} title="Add Image"><ImageIcon size={18} /></button>
+			<button type="button" on:click={() => editor.chain().focus().setHorizontalRule().run()} title="Horizontal Rule"><Minus size={18} /></button>
+			<button type="button" on:click={() => editor.chain().focus().toggleCodeBlock().run()} class:is-active={activeState.codeBlock} title="Code Block"><Code size={18} /></button>
+			<button type="button" on:click={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()} title="Add Table"><Table2 size={18}/></button>
 		</div>
 	{/if}
 	<div bind:this={element} class="editor-content"></div>
