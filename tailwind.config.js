@@ -21,11 +21,29 @@ export default {
               marginBottom: '1.25em',
               textAlign: 'left',
             },
-            h1: { fontSize: '25px' },
-            h2: { fontSize: '21px' },
-            h3: { fontSize: '19px' },
-
-            // Bullet kotak hitam
+            h1: {
+              fontSize: '25px',
+              textAlign: 'left', 
+              wordBreak: 'break-word', 
+            },
+            h2: {
+              fontSize: '21px',
+              textAlign: 'left', 
+              wordBreak: 'break-word', 
+            },
+            h3: {
+              fontSize: '19px',
+              textAlign: 'left', 
+              wordBreak: 'break-word', 
+            },
+            h4: { 
+              textAlign: 'left',
+              wordBreak: 'break-word',
+            },
+            h5: { 
+              textAlign: 'left',
+              wordBreak: 'break-word',
+            },
             ul: {
               listStyleType: 'square',
               paddingLeft: '1.5em',
@@ -61,11 +79,29 @@ export default {
             p: {
               textAlign: 'left',
             },
-            h1: { fontSize: '36px' },
-            h2: { fontSize: '28px' },
-            h3: { fontSize: '24px' },
-
-            // Bullet kotak hitam untuk desktop
+            h1: {
+              fontSize: '36px',
+              textAlign: 'left', 
+              wordBreak: 'break-word', 
+            },
+            h2: {
+              fontSize: '28px',
+              textAlign: 'left', 
+              wordBreak: 'break-word', 
+            },
+            h3: {
+              fontSize: '24px',
+              textAlign: 'left', 
+              wordBreak: 'break-word', 
+            },
+             h4: { 
+              textAlign: 'left',
+              wordBreak: 'break-word',
+            },
+            h5: { 
+              textAlign: 'left',
+              wordBreak: 'break-word',
+            },
             ul: {
               listStyleType: 'square',
               paddingLeft: '1.5em',

@@ -9,6 +9,7 @@ import type { PageData } from './$types';
   import { theme } from '$lib/stores/theme';
   import { fade } from 'svelte/transition';
 import "../../app.css";
+import NewsletterPopup from '$lib/components/ui/NewsletterPopup.svelte';
 
   import TopHeader from '$lib/sections/TopHeader.svelte';
   import Header from "$lib/sections/Header.svelte";
@@ -183,6 +184,7 @@ if (currentScrollY > lastScrollY && currentScrollY > 150) {
     {#key $page.url.pathname}
 			<div in:fade={{ duration: 200, delay: 200 }} out:fade={{ duration: 200 }}>
 				<slot />
+        <NewsletterPopup />
 			</div>
 		{/key}
   </main>
