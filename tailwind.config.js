@@ -13,7 +13,6 @@ export default {
       typography: ({ theme }) => ({
         DEFAULT: {
           css: {
-            maxWidth: '55ch',
             fontSize: '16px',
             lineHeight: '1.6',
             p: {
@@ -22,17 +21,17 @@ export default {
               textAlign: 'left',
             },
             h1: {
-              fontSize: '25px',
+              fontSize: '26px',
               textAlign: 'left', 
               wordBreak: 'break-word', 
             },
             h2: {
-              fontSize: '21px',
+              fontSize: '22px',
               textAlign: 'left', 
               wordBreak: 'break-word', 
             },
             h3: {
-              fontSize: '19px',
+              fontSize: '20px',
               textAlign: 'left', 
               wordBreak: 'break-word', 
             },
@@ -73,7 +72,7 @@ export default {
         },
         lg: {
           css: {
-            maxWidth: '70ch',
+            
             fontSize: '18px',
             lineHeight: '1.6',
             p: {
