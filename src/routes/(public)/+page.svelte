@@ -6,7 +6,7 @@
   import ListPostCard from '$lib/components/post/ListPostCard.svelte';
   import Pagination from '$lib/components/post/Pagination.svelte';
   import StoryFeaturedCard from '$lib/components/post/StoryFeaturedCard.svelte';
-  import { buildHomepageSchema } from '$lib/server/schema-builder-homepage';
+  import { buildHomepageSchema } from '$lib/seo/schema-builder-homepage';
 
   export let data: PageData;
   $: homepageData = data.homepageData;
