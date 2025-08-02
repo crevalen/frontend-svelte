@@ -11,28 +11,46 @@
 
 <div
   transition:fly={{ x: -20, duration: 400, delay: 300 }}
-  class="fixed top-4 left-4 z-50 w-[calc(100%-2rem)] max-w-xs"
+  class="fixed top-5 left-5 z-50 w-[calc(100%-2.5rem)] max-w-sm"
 >
-  <div class="rounded-md border border-slate-200 bg-white p-4 shadow-lg">
-    <h3 class="text-sm font-semibold text-gray-800">Jangan lewatkan update terbaru</h3>
-    <p class="mt-1 text-xs text-slate-600">
-      Aktifkan notifikasi untuk menerima artikel langsung di perangkat Anda. Kami tidak akan
-      mengirim spam.
-    </p>
+  <div class="flex items-start gap-4 rounded-lg bg-white p-5 shadow-lg shadow-slate-900/10">
+    <div class="flex-shrink-0 text-slate-500">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="1.5"
+        stroke="currentColor"
+        class="h-7 w-7"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"
+        />
+      </svg>
+    </div>
 
-    <div class="mt-4 flex gap-2">
-      <button
-        on:click={() => handleResponse(true)}
-        class="w-full rounded-md bg-gray-800 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-black active:scale-95"
-      >
-        Aktifkan
-      </button>
-      <button
-        on:click={() => handleResponse(false)}
-        class="w-full rounded-md px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100"
-      >
-        Nanti Saja
-      </button>
+    <div class="flex-grow">
+      <h3 class="text-base font-semibold text-slate-800">Jangan Lewatkan Update Terbaru</h3>
+      <p class="mt-1 text-sm text-slate-600">
+        Aktifkan notifikasi untuk menerima artikel langsung di perangkat Anda.
+      </p>
+
+      <div class="mt-5 flex gap-3">
+        <button
+          on:click={() => handleResponse(true)}
+          class="w-full rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-slate-700 active:scale-95"
+        >
+          Aktifkan
+        </button>
+        <button
+          on:click={() => handleResponse(false)}
+          class="w-full rounded-md bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-200"
+        >
+          Nanti Saja
+        </button>
+      </div>
     </div>
   </div>
 </div>

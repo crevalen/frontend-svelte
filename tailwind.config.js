@@ -21,9 +21,9 @@ export default {
               marginBottom: '1.25em',
               textAlign: 'left',
             },
-            h1: { fontSize: '24px' },
-            h2: { fontSize: '20px' },
-            h3: { fontSize: '18px' },
+            h1: { fontSize: '26px' },
+            h2: { fontSize: '22px' },
+            h3: { fontSize: '20px' },
 
             // Bullet kotak hitam
             ul: {
