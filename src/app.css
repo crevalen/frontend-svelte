@@ -75,9 +75,7 @@
     font-family: var(--font-sans);
   }
 
-  /* Custom Indentation for first line of paragraphs within article content */
-  /* This ensures the first line of paragraphs starts further in,
-     making subsequent lines appear 'wider'. */
+ 
   #article-content p {
     text-indent: 2em; /* Adjust as needed for desired indentation */
   }
@@ -95,16 +93,8 @@
   }
 }
 
-/* Tambahan: Pastikan prose content tidak memiliki max-width tambahan dari luar */
-/* Ini penting agar konten artikel mengisi lebar yang tersedia */
+
 .prose {
   max-width: none !important;
 }
 
-/* Fix for list markers if needed - this will be handled in tailwind.config.js */
-/* If you want square bullets for all lists, ensure it's in tailwind.config.js or here. */
-@layer components {
-  .prose ul > li::marker {
-    @apply text-slate-800 dark:text-slate-200; /* Adjust color for dark mode readability */
-  }
-}

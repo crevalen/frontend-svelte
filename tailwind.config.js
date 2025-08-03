@@ -15,7 +15,7 @@ export default {
           css: {
             fontSize: '16px',
             lineHeight: '1.75',
-            maxWidth: '100%', 
+            maxWidth: '100%', // Ensure typography doesn't add its own max-width
 
             p: {
               marginTop: '1.25em',
@@ -26,21 +26,21 @@ export default {
               fontSize: '1.75rem',
               fontWeight: '700',
               lineHeight: '1.3',
-              textAlign: 'left', 
+              textAlign: 'left', // Explicitly left-align headings
               marginBottom: '0.8em',
             },
             h2: {
               fontSize: '1.5rem',
               fontWeight: '700',
               lineHeight: '1.35',
-              textAlign: 'left', 
+              textAlign: 'left', // Explicitly left-align headings
               marginBottom: '0.6em',
             },
             h3: {
               fontSize: '1.25rem',
               fontWeight: '600',
               lineHeight: '1.4',
-              textAlign: 'left', 
+              textAlign: 'left', // Explicitly left-align headings
               marginBottom: '0.5em',
             },
             ul: {
@@ -49,11 +49,14 @@ export default {
               marginTop: '1em',
               marginBottom: '1em',
             },
+            // Penyesuaian warna marker list di sini untuk mode gelap
             'ul > li::marker': {
-              color: theme('colors.slate.800'), 
-              '@apply dark:!text-slate-200': {}, 
+              color: theme('colors.slate.800'),
+              '.dark &': { // Menggunakan nested selector untuk dark mode
+                color: theme('colors.slate.200'),
+              },
             },
-            
+            // Ensure no max-width is applied by typography plugin
             '*': {
               maxWidth: 'none',
             },
