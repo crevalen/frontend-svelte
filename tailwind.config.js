@@ -13,108 +13,103 @@ export default {
       typography: ({ theme }) => ({
         DEFAULT: {
           css: {
-            color: theme('colors.slate.800'),
             fontSize: '16px',
             lineHeight: '1.75',
-            maxWidth: '100%',
-            marginLeft: 'auto',
-            marginRight: 'auto',
+            textAlign: 'left',
+            wordBreak: 'break-word',
+            overflowWrap: 'break-word',
+            textWrap: 'pretty',
 
+            // Paragraf
             p: {
-              marginTop: '1.2em',
-              marginBottom: '1.2em',
+              marginTop: '1.25em',
+              marginBottom: '1.25em',
               textAlign: 'left',
             },
+
+            // Judul
             h1: {
-              fontSize: '1.8rem',
-              fontWeight: '700',
+              fontSize: '1.75rem',
               lineHeight: '1.3',
-              marginBottom: '0.8em',
+              fontWeight: '700',
+              textWrap: 'balance',
               textAlign: 'left',
+              marginBottom: '0.8em',
             },
             h2: {
               fontSize: '1.5rem',
+              lineHeight: '1.35',
               fontWeight: '700',
-              marginTop: '1.5em',
-              marginBottom: '0.6em',
+              textWrap: 'balance',
               textAlign: 'left',
+              marginBottom: '0.6em',
             },
             h3: {
               fontSize: '1.25rem',
+              lineHeight: '1.4',
               fontWeight: '600',
-              marginTop: '1.2em',
+              textWrap: 'balance',
+              textAlign: 'left',
               marginBottom: '0.5em',
-              textAlign: 'left',
             },
-            h4: {
-              fontSize: '1.1rem',
-              fontWeight: '600',
-              marginTop: '1em',
-              marginBottom: '0.4em',
-              textAlign: 'left',
-            },
+            h4: { textAlign: 'left' },
+            h5: { textAlign: 'left' },
+
+            // List
             ul: {
-              listStyleType: 'disc',
-              paddingLeft: '1.5em',
-              marginTop: '1em',
-              marginBottom: '1em',
-            },
-            ol: {
-              listStyleType: 'decimal',
+              listStyleType: 'square',
               paddingLeft: '1.5em',
               marginTop: '1em',
               marginBottom: '1em',
             },
             'ul > li::marker': {
-              color: theme('colors.cyan.600'),
+              color: theme('colors.black'),
             },
-            blockquote: {
-              fontStyle: 'italic',
-              color: theme('colors.slate.600'),
-              borderLeft: `4px solid ${theme('colors.cyan.400')}`,
-              paddingLeft: '1rem',
-              marginTop: '1em',
-              marginBottom: '1em',
-            },
-            a: {
-              color: theme('colors.cyan.600'),
-              textDecoration: 'underline',
-              fontWeight: '500',
-              '&:hover': {
-                color: theme('colors.cyan.800'),
-              },
-            },
-            hr: {
-              borderColor: theme('colors.slate.300'),
-              marginTop: '2em',
-              marginBottom: '2em',
-            },
+
+            // Warna tema
+            '--tw-prose-body': theme('colors.slate[800]'),
+            '--tw-prose-headings': theme('colors.slate[900]'),
+            '--tw-prose-bold': theme('colors.slate[900]'),
+            '--tw-prose-links': theme('colors.cyan[600]'),
+            '--tw-prose-hr': theme('colors.slate[200]'),
+            '--tw-prose-quotes': theme('colors.slate[600]'),
+            '--tw-prose-quote-borders': theme('colors.slate[200]'),
+            '--tw-prose-invert-body': theme('colors.slate[300]'),
+            '--tw-prose-invert-headings': theme('colors.slate[100]'),
+            '--tw-prose-invert-bold': theme('colors.slate[100]'),
+            '--tw-prose-invert-links': theme('colors.cyan[400]'),
+            '--tw-prose-invert-hr': theme('colors.slate[700]'),
+            '--tw-prose-invert-quotes': theme('colors.slate[400]'),
+            '--tw-prose-invert-quote-borders': theme('colors.slate[700]'),
           },
         },
         lg: {
           css: {
             fontSize: '18px',
             lineHeight: '1.8',
-             maxWidth: '100%',
-            p: { textAlign: 'left' },
+            textAlign: 'left',
+            wordBreak: 'break-word',
+            overflowWrap: 'break-word',
+
+            p: {
+              textAlign: 'justify',
+            },
             h1: {
               fontSize: '2.25rem',
               lineHeight: '1.3',
-              marginBottom: '1em',
+              textWrap: 'balance',
+              marginBottom: '0.8em',
             },
             h2: {
               fontSize: '1.875rem',
-              marginTop: '1.5em',
-              marginBottom: '0.8em',
+              lineHeight: '1.35',
+              textWrap: 'balance',
+              marginBottom: '0.6em',
             },
             h3: {
               fontSize: '1.5rem',
-              marginTop: '1.2em',
-              marginBottom: '0.6em',
-            },
-            h4: {
-              fontSize: '1.25rem',
-              marginTop: '1em',
+              lineHeight: '1.4',
+              textWrap: 'balance',
               marginBottom: '0.5em',
             },
           },
