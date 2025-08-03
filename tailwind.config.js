@@ -23,7 +23,7 @@ export default {
             p: {
               marginTop: '1.2em',
               marginBottom: '1.2em',
-              textAlign: 'justify',
+              textAlign: 'left',
             },
             h1: {
               fontSize: '1.8rem',
@@ -96,7 +96,7 @@ export default {
             fontSize: '18px',
             lineHeight: '1.8',
              maxWidth: '100%',
-            p: { textAlign: 'justify' },
+            p: { textAlign: 'left' },
             h1: {
               fontSize: '2.25rem',
               lineHeight: '1.3',
