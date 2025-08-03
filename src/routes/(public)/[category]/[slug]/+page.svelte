@@ -166,7 +166,8 @@ function debouncedResize() {
 
 </svelte:head>
 <div class="py-8 sm:py-12">
-  <div class="container max-w-[1100px] mx-auto px-4 grid grid-cols-1 lg:grid-cols-3 lg:gap-x-12">
+  <div class="container max-w-[1100px] mx-auto px-4 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-10">
+
     
     <main class="lg:col-span-2">
       <article>
@@ -256,9 +257,10 @@ function debouncedResize() {
     {/if}
   </div>
 {/if}
-        <div id="article-content" class="prose lg:prose-lg dark:prose-invert">
-          {@html post.content || ''}
-        </div>
+        <div id="article-content" 
+     class="prose lg:prose-lg dark:prose-invert max-w-none w-full">
+  {@html post.content || ''}
+</div>
       </article>
 
       <div class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700/50 space-y-8">
