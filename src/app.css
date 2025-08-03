@@ -53,7 +53,36 @@
   --font-serif: Lora, serif;
 }
 
-/* 6. Style Input */
+@layer base {
+  /* Pengaturan dasar untuk <html> dan <body>.
+    - Menambahkan scroll-smooth untuk navigasi anchor link yang mulus.
+    - Mengaktifkan anti-aliasing untuk teks yang lebih tajam.
+  */
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* PENTING: Untuk hyphenation (pemenggalan kata) yang optimal dalam Bahasa Indonesia,
+      pastikan Anda menambahkan `lang="id"` pada tag <html> di file `src/app.html` Anda.
+      Contoh: <html lang="id" class="dark">
+    */
+  }
+
+  body {
+    @apply bg-white text-slate-800 dark:bg-slate-900 dark:text-slate-200;
+    font-family: 'Roboto', sans-serif; /* Menggunakan font sans-serif sebagai default */
+  }
+
+  /*
+    Memastikan elemen .prose (konten artikel) tidak memiliki batas lebar
+    yang dipaksakan oleh plugin, sehingga lebar diatur oleh layout container Anda.
+  */
+  .prose {
+    font-family: 'Lora', serif; /* Menggunakan font serif untuk keterbacaan artikel */
+  }
+}
+
+/* 4. Style Input (Tidak ada perubahan, sudah baik) */
 .input-text,
 .input-textarea,
 .input-select {
@@ -67,17 +96,3 @@
 .input-checkbox {
   @apply h-4 w-4 rounded border-slate-800 text-blue-700 focus:ring-blue-500;
 }
-
-/* 7. Global Typography Fix & Custom Indent */
-@layer base {
-  body {
-    @apply bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200;
-    font-family: var(--font-sans);
-  }
-
-
-
-.prose {
-  max-width: none !important;
-}
-
