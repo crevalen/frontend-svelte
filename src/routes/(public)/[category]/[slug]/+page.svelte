@@ -249,9 +249,9 @@
           </div>
         {/if}
 
-        <div id="article-content" class="prose lg:prose-lg dark:prose-invert max-w-none w-full">
-          {@html post.content || ''}
-        </div>
+        <div id="article-content" class="prose lg:prose-lg dark:prose-invert max-w-none">
+  {@html post.content || ''}
+</div>
       </article>
 
       <div class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700/50 space-y-8">
