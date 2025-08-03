@@ -78,7 +78,7 @@
     yang dipaksakan oleh plugin, sehingga lebar diatur oleh layout container Anda.
   */
   .prose {
-    font-family: 'Lora', serif; /* Menggunakan font serif untuk keterbacaan artikel */
+    font-family: 'Roboto', sans-serif; /* Menggunakan font serif untuk keterbacaan artikel */
   }
 }
 
