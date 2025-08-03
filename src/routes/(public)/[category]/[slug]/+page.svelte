@@ -16,7 +16,6 @@
   import { ChevronRight } from '@steeze-ui/heroicons';
 
   export let data: PageData;
-
   $: ({ post, meta, jsonLd, comments, relatedPosts, popularPosts } = data);
   $: readTime = post.content ? calculateReadTime(post.content) : 0;
   $: category = post.categories?.[0];
@@ -26,6 +25,10 @@
 
   let resizeTimeout: NodeJS.Timeout;
 
+  // --- START MODIFIED CODE ---
+  // Variabel ini tidak lagi diperlukan karena kita akan menargetkan semua paragraf
+  // let justifiedParagraphs: NodeListOf<HTMLParagraphElement> | undefined;
+
   function debouncedResize() {
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(() => {
@@ -33,21 +36,20 @@
     }, 150);
   }
 
-  let justifiedParagraphs: NodeListOf<HTMLParagraphElement> | undefined;
-
   function handleResponsiveAlignment() {
+    if (!browser) return;
     const isMobile = window.innerWidth < 1024;
+    const articleContent = document.querySelector('#article-content');
+    if (!articleContent) return;
 
-    if (!justifiedParagraphs) {
-      const articleContent = document.querySelector('#article-content');
-      if (!articleContent) return;
-      justifiedParagraphs = articleContent.querySelectorAll('p[style*="text-align: justify"]');
-    }
+    // Target semua paragraf di dalam artikel, terlepas dari inline style
+    const paragraphs = articleContent.querySelectorAll('p'); 
 
-    justifiedParagraphs.forEach((p) => {
+    paragraphs.forEach((p) => {
       p.style.textAlign = isMobile ? 'left' : 'justify';
     });
   }
+  // --- END MODIFIED CODE ---
 
   function generateToc() {
     if (!browser || !post.content) return;
@@ -77,18 +79,25 @@
     if (!articleContent || !inlineRelatedContainer) return;
     const paragraphs = articleContent.querySelectorAll('p');
     if (paragraphs.length > 3) {
-      paragraphs[3].after(inlineRelatedContainer);
-      (inlineRelatedContainer as HTMLElement).style.display = 'block';
+      // Find a suitable paragraph to insert after, avoiding short ones near the start.
+      // Or simply insert after the 3rd or 4th paragraph for consistency.
+      const targetParagraphIndex = Math.min(Math.floor(paragraphs.length / 2), 3); // Example: after 3rd or middle paragraph
+      if (paragraphs[targetParagraphIndex]) {
+        paragraphs[targetParagraphIndex].after(inlineRelatedContainer);
+        (inlineRelatedContainer as HTMLElement).style.display = 'block';
+      } else if (paragraphs[paragraphs.length - 1]) { // Fallback to end if not enough paragraphs
+        paragraphs[paragraphs.length - 1].after(inlineRelatedContainer);
+        (inlineRelatedContainer as HTMLElement).style.display = 'block';
+      }
     }
   }
 
   function runClientSideLogic() {
     if (!browser) return;
-
     window.requestAnimationFrame(() => {
       generateToc();
       insertRelatedArticles();
-      handleResponsiveAlignment();
+      handleResponsiveAlignment(); // Panggil di sini juga
     });
   }
 
@@ -104,12 +113,10 @@
       window.removeEventListener('resize', debouncedResize);
     };
   });
-
   afterNavigate(() => {
-    justifiedParagraphs = undefined;
+    // justifiedParagraphs = undefined; // Tidak lagi diperlukan
     runClientSideLogic();
   });
-
   function getSafeSchemaString() {
     if (!post) return '';
     const breadcrumbSchema = {
@@ -160,9 +167,8 @@
 </svelte:head>
 
 <div class="py-8 sm:py-12">
-  <div class="container max-w-[1200px] mx-auto px-4 grid grid-cols-1 lg:grid-cols-[2fr_320px] gap-10">
+  <div class="container max-w-[1100px] mx-auto px-4 grid grid-cols-1 lg:grid-cols-[2fr_320px] gap-10">
 
-    <!-- Main Content -->
     <main>
       <article>
         <nav class="text-md text-slate-700 dark:text-gray-400 mb-5" aria-label="Breadcrumb">
@@ -250,8 +256,8 @@
         {/if}
 
         <div id="article-content" class="prose lg:prose-lg dark:prose-invert max-w-none">
-  {@html post.content || ''}
-</div>
+          {@html post.content || ''}
+        </div>
       </article>
 
       <div class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700/50 space-y-8">
@@ -293,7 +299,6 @@
       </div>
     </main>
 
-    <!-- Sidebar -->
     <aside class="hidden lg:block h-fit lg:sticky lg:top-24 w-[320px]">
       <PopularPosts posts={popularPosts} />
     </aside>

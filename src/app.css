@@ -38,7 +38,6 @@
 /* 2. Import Tailwind */
 @import "tailwindcss";
 @import "tw-animate-css";
-@import './styles/article-fix.css';
 
 /* 3. Plugin Tailwind */
 @plugin "@tailwindcss/typography";
@@ -69,14 +68,43 @@
   @apply h-4 w-4 rounded border-slate-800 text-blue-700 focus:ring-blue-500;
 }
 
-/* 7. Global Typography Fix */
+/* 7. Global Typography Fix & Custom Indent */
 @layer base {
   body {
     @apply bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200;
     font-family: var(--font-sans);
   }
 
- 
+  /* Custom Indentation for first line of paragraphs within article content */
+  /* This ensures the first line of paragraphs starts further in,
+     making subsequent lines appear 'wider'. */
+  #article-content p {
+    text-indent: 2em; /* Adjust as needed for desired indentation */
+  }
+
+  /* Ensure headings are not indented by text-indent. They should always be left-aligned. */
+  #article-content h1,
+  #article-content h2,
+  #article-content h3,
+  #article-content h4,
+  #article-content h5,
+  #article-content h6 {
+    text-indent: 0;
+    /* Ensure headings are always left-aligned */
+    text-align: left !important;
+  }
 }
 
+/* Tambahan: Pastikan prose content tidak memiliki max-width tambahan dari luar */
+/* Ini penting agar konten artikel mengisi lebar yang tersedia */
+.prose {
+  max-width: none !important;
+}
 
+/* Fix for list markers if needed - this will be handled in tailwind.config.js */
+/* If you want square bullets for all lists, ensure it's in tailwind.config.js or here. */
+@layer components {
+  .prose ul > li::marker {
+    @apply text-slate-800 dark:text-slate-200; /* Adjust color for dark mode readability */
+  }
+}

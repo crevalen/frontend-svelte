@@ -3,6 +3,7 @@ import typography from '@tailwindcss/typography';
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./src/**/*.{html,js,svelte,ts}'],
+  darkMode: 'class', // Add or ensure this is present for dark mode to work via class
   theme: {
     extend: {
       fontFamily: {
@@ -14,13 +15,9 @@ export default {
           css: {
             fontSize: '16px',
             lineHeight: '1.75',
-            textAlign: 'left',
-            wordBreak: 'normal',
-            overflowWrap: 'anywhere',
-            maxWidth: '100%',
+            maxWidth: '100%', 
 
             p: {
-              textAlign: 'left',
               marginTop: '1.25em',
               marginBottom: '1.25em',
             },
@@ -29,28 +26,22 @@ export default {
               fontSize: '1.75rem',
               fontWeight: '700',
               lineHeight: '1.3',
-              textAlign: 'start',
+              textAlign: 'left', 
               marginBottom: '0.8em',
-              wordBreak: 'normal',
-              overflowWrap: 'anywhere',
             },
             h2: {
               fontSize: '1.5rem',
               fontWeight: '700',
               lineHeight: '1.35',
-              textAlign: 'start',
+              textAlign: 'left', 
               marginBottom: '0.6em',
-              wordBreak: 'normal',
-              overflowWrap: 'anywhere',
             },
             h3: {
               fontSize: '1.25rem',
               fontWeight: '600',
               lineHeight: '1.4',
-              textAlign: 'start',
+              textAlign: 'left', 
               marginBottom: '0.5em',
-              wordBreak: 'normal',
-              overflowWrap: 'anywhere',
             },
             ul: {
               listStyleType: 'square',
@@ -59,7 +50,12 @@ export default {
               marginBottom: '1em',
             },
             'ul > li::marker': {
-              color: theme('colors.black'),
+              color: theme('colors.slate.800'), 
+              '@apply dark:!text-slate-200': {}, 
+            },
+            
+            '*': {
+              maxWidth: 'none',
             },
           },
         },
@@ -67,10 +63,7 @@ export default {
           css: {
             fontSize: '18px',
             lineHeight: '1.8',
-            textAlign: 'left',
             maxWidth: '100%',
-            wordBreak: 'normal',
-            overflowWrap: 'anywhere',
           },
         },
       }),
