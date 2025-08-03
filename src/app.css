@@ -75,23 +75,6 @@
     font-family: var(--font-sans);
   }
 
- 
-  #article-content p {
-    text-indent: 2em; /* Adjust as needed for desired indentation */
-  }
-
-  /* Ensure headings are not indented by text-indent. They should always be left-aligned. */
-  #article-content h1,
-  #article-content h2,
-  #article-content h3,
-  #article-content h4,
-  #article-content h5,
-  #article-content h6 {
-    text-indent: 0;
-    /* Ensure headings are always left-aligned */
-    text-align: left !important;
-  }
-}
 
 
 .prose {
