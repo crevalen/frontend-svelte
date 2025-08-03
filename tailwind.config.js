@@ -1,9 +1,8 @@
-import typography from '@tailwindcss/typography';
+import typography from '@tailwindcss/typography'
 
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./src/**/*.{html,js,svelte,ts}'],
-
   theme: {
     extend: {
       fontFamily: {
@@ -16,46 +15,49 @@ export default {
             fontSize: '16px',
             lineHeight: '1.75',
             textAlign: 'left',
+            overflowWrap: 'anywhere',
             wordBreak: 'break-word',
-            overflowWrap: 'break-word',
             textWrap: 'pretty',
 
-            // Paragraf
             p: {
               marginTop: '1.25em',
               marginBottom: '1.25em',
               textAlign: 'left',
+              overflowWrap: 'anywhere',
             },
 
-            // Judul
+            // Heading
             h1: {
               fontSize: '1.75rem',
-              lineHeight: '1.3',
               fontWeight: '700',
-              textWrap: 'balance',
-              textAlign: 'left',
+              lineHeight: '1.3',
+              textAlign: 'start',
               marginBottom: '0.8em',
+              overflowWrap: 'anywhere',
+              hyphens: 'auto',
+              textWrap: 'balance',
             },
             h2: {
               fontSize: '1.5rem',
-              lineHeight: '1.35',
               fontWeight: '700',
-              textWrap: 'balance',
-              textAlign: 'left',
+              lineHeight: '1.35',
+              textAlign: 'start',
               marginBottom: '0.6em',
+              overflowWrap: 'anywhere',
+              hyphens: 'auto',
+              textWrap: 'balance',
             },
             h3: {
               fontSize: '1.25rem',
-              lineHeight: '1.4',
               fontWeight: '600',
-              textWrap: 'balance',
-              textAlign: 'left',
+              lineHeight: '1.4',
+              textAlign: 'start',
               marginBottom: '0.5em',
+              overflowWrap: 'anywhere',
+              hyphens: 'auto',
+              textWrap: 'balance',
             },
-            h4: { textAlign: 'left' },
-            h5: { textAlign: 'left' },
 
-            // List
             ul: {
               listStyleType: 'square',
               paddingLeft: '1.5em',
@@ -66,7 +68,6 @@ export default {
               color: theme('colors.black'),
             },
 
-            // Warna tema
             '--tw-prose-body': theme('colors.slate[800]'),
             '--tw-prose-headings': theme('colors.slate[900]'),
             '--tw-prose-bold': theme('colors.slate[900]'),
@@ -88,35 +89,43 @@ export default {
             fontSize: '18px',
             lineHeight: '1.8',
             textAlign: 'left',
-            wordBreak: 'break-word',
-            overflowWrap: 'break-word',
+            overflowWrap: 'anywhere',
 
-            p: {
-              textAlign: 'justify',
-            },
+            p: { textAlign: 'left', overflowWrap: 'anywhere' },
             h1: {
-              fontSize: '2.25rem',
+              fontSize: '1.9rem',
+              fontWeight: '700',
               lineHeight: '1.3',
-              textWrap: 'balance',
+              textAlign: 'start',
               marginBottom: '0.8em',
+              overflowWrap: 'anywhere',
+              hyphens: 'auto',
+              textWrap: 'balance',
             },
             h2: {
-              fontSize: '1.875rem',
+              fontSize: '1.6rem',
+              fontWeight: '700',
               lineHeight: '1.35',
-              textWrap: 'balance',
+              textAlign: 'start',
               marginBottom: '0.6em',
+              overflowWrap: 'anywhere',
+              hyphens: 'auto',
+              textWrap: 'balance',
             },
             h3: {
-              fontSize: '1.5rem',
+              fontSize: '1.3rem',
+              fontWeight: '600',
               lineHeight: '1.4',
-              textWrap: 'balance',
+              textAlign: 'start',
               marginBottom: '0.5em',
+              overflowWrap: 'anywhere',
+              hyphens: 'auto',
+              textWrap: 'balance',
             },
           },
         },
       }),
     },
   },
-
   plugins: [typography],
 };

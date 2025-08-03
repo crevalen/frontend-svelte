@@ -1,4 +1,4 @@
-/* 1. Impor Font Kustom (WAJIB DI ATAS SEMUANYA) */
+/* 1. Impor Font Kustom */
 @font-face {
   font-display: swap;
   font-family: 'Roboto';
@@ -35,47 +35,71 @@
   src: url('/fonts/lora-v36-latin-700.woff2') format('woff2');
 }
 
-/* 2. Impor Dasar Tailwind */
+/* 2. Import Tailwind */
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/* 3. Daftarkan Plugin & Hubungkan ke Konfigurasi JS */
+/* 3. Plugin Tailwind */
 @plugin "@tailwindcss/typography";
 @plugin "@tailwindcss/aspect-ratio";
 @config "../tailwind.config.js";
 
-/* 4. Definisikan Varian Dark Mode */
+/* 4. Dark mode */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* 5. Definisikan Variabel Global (opsional, karena warna diatur di JS) */
+/* 5. Theme font */
 @theme {
   --font-sans: Roboto, sans-serif;
   --font-serif: Lora, serif;
 }
 
-/* PERBAIKAN 3: Sempurnakan gaya input di sini */
-	.input-text,
-	.input-textarea,
-	.input-select {
-		@apply block w-full rounded-lg border border-slate-600 bg-white p-3 text-sm text-slate-900 placeholder:text-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50;
-	}
-	/* Menambahkan kelas hover agar lebih interaktif */
-	.input-text:hover,
-	.input-textarea:hover,
-	.input-select:hover {
-		@apply border-slate-800;
-	}
-	.input-checkbox {
-		@apply h-4 w-4 rounded border-slate-800 text-blue-700 focus:ring-blue-500;
-	}
+/* 6. Style Input */
+.input-text,
+.input-textarea,
+.input-select {
+  @apply block w-full rounded-lg border border-slate-600 bg-white p-3 text-sm text-slate-900 placeholder:text-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50;
+}
+.input-text:hover,
+.input-textarea:hover,
+.input-select:hover {
+  @apply border-slate-800;
+}
+.input-checkbox {
+  @apply h-4 w-4 rounded border-slate-800 text-blue-700 focus:ring-blue-500;
+}
 
-.input-text, .input-textarea {
-		@apply w-full rounded-md border-slate-300 text-sm text-slate-800 focus:border-blue-500 focus:ring-blue-500;
-	}
-/* 6. Aturan Dasar untuk Body */
+/* 7. Global Typography Fix */
 @layer base {
   body {
     @apply bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200;
     font-family: var(--font-sans);
+  }
+
+  h1, h2, h3 {
+    display: block;
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-break: keep-all;
+    white-space: normal;
+    line-height: 1.3;
+    margin-bottom: 0.6em;
+    hyphens: none;
+    text-wrap: pretty;
+  }
+
+  p {
+    overflow-wrap: break-word;
+    word-break: break-word;
+    text-align: left;
+    hyphens: none;
+    widows: 2;
+    orphans: 2;
+  }
+}
+
+/* 8. Browser yang mendukung balancing */
+@supports (text-wrap: balance) {
+  h1, h2, h3 {
+    text-wrap: balance;
   }
 }
