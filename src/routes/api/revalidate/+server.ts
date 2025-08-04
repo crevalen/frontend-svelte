@@ -1,4 +1,4 @@
-import { REVALIDATE_TOKEN, VERCEL_ACCESS_TOKEN, VERCEL_PROJECT_ID } from '$env/static/private';
+import { REVALIDATE_TOKEN } from '$env/static/private';
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
@@ -6,39 +6,42 @@ export const POST: RequestHandler = async ({ request }) => {
     try {
         const { path, token } = await request.json();
 
+        // 1. Verifikasi token internal Anda (sudah benar)
         if (token !== REVALIDATE_TOKEN) {
-            throw error(401, 'Invalid revalidation token');
+            throw error(401, 'Token revalidasi tidak valid.');
         }
         if (!path || typeof path !== 'string') {
-            throw error(400, 'Invalid path provided');
+            throw error(400, 'Path tidak valid.');
         }
 
-        // Panggil API Vercel untuk Revalidasi
+        // 2. Panggil Vercel ISR Webhook yang benar
+        console.log(`Mencoba revalidasi untuk path: ${path}`);
+        
+        // Vercel menggunakan metode GET untuk webhook revalidasi path-based
+        // dan token rahasianya dikirim sebagai query parameter 'secret'.
         const revalidateResponse = await fetch(
-            `https://api.vercel.com/v1/revalidate?path=${encodeURIComponent(path)}&teamId=${process.env.VERCEL_TEAM_ID || ''}`,
+            `https://www.crevalen.xyz/api/revalidate?secret=${REVALIDATE_TOKEN}&path=${path}`,
             {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${VERCEL_ACCESS_TOKEN}`
-                },
-                body: JSON.stringify({
-                    projectIds: [VERCEL_PROJECT_ID]
-                })
+                method: 'GET'
             }
         );
 
         if (!revalidateResponse.ok) {
             const errorBody = await revalidateResponse.json();
-            console.error('Vercel Revalidation API gagal:', errorBody);
-            throw error(500, `Vercel Revalidation API gagal: ${errorBody.error.message}`);
+            console.error('Vercel Revalidation Webhook gagal:', errorBody);
+            throw error(500, `Vercel Webhook gagal: ${errorBody.message}`);
         }
 
-        return json({ revalidated: true, path });
+        const responseData = await revalidateResponse.json();
+        console.log(`Respon revalidasi dari Vercel:`, responseData);
+
+        return json({ revalidated: true, path, vercelResponse: responseData });
 
     } catch (err: any) {
-        console.error('Revalidation error:', err);
-        if (err.status) { throw err; }
-        throw error(500, 'Revalidation failed');
+        console.error('Terjadi error saat proses revalidasi:', err);
+        if (err.status) {
+            throw err;
+        }
+        throw error(500, 'Proses revalidasi gagal total.');
     }
 };
