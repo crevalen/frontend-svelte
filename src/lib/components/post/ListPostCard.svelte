@@ -8,12 +8,12 @@
 <a href={`/${category?.slug}/${post.slug}`} class="group grid grid-cols-3 sm:grid-cols-4 gap-4 sm:gap-6 items-center">
   <div class="col-span-1 aspect-video overflow-hidden">
     <img 
-      src={post.featuredImage?.url_thumb || '/default-image.png'}
+      src={post.featuredImage?.url_placeholder || '/default-image.png'}
       srcset={`
         ${post.featuredImage?.url_thumb} 300w,
-        ${post.featuredImage?.url_medium} 768w
+        ${post.featuredImage?.url_small} 500w
       `}
-      sizes="(max-width: 639px) 33vw, 25vw"
+      sizes="(max-width: 639px) 30vw, 175px"
       alt={post.title} 
       class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
       loading="lazy"

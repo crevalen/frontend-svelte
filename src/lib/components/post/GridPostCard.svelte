@@ -8,12 +8,17 @@
   <a href={`/${category?.slug}/${post.slug}`}>
     <div class="aspect-video overflow-hidden">
       <img 
-        src={post.featuredImage?.url_thumb || '/default-image.png'}
+        src={post.featuredImage?.url_placeholder || '/default-image.png'}
         srcset={`
           ${post.featuredImage?.url_thumb} 300w,
+          ${post.featuredImage?.url_small} 500w,
           ${post.featuredImage?.url_medium} 768w
         `}
-        sizes="(max-width: 767px) 50vw, 33vw"
+        sizes="
+          (max-width: 639px) 45vw,
+          (max-width: 1023px) 30vw,
+          175px
+        "
         alt={post.title} 
         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         loading="lazy"

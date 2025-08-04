@@ -9,13 +9,14 @@
   <a href={`/${category?.slug}/${post.slug}`} class="block">
     <div class="aspect-w-16 aspect-h-9">
       <img 
-        src={post.featuredImage?.url_thumb || '/default-image.png'}
+        src={post.featuredImage?.url_placeholder || '/default-image.png'}
         srcset={`
           ${post.featuredImage?.url_thumb} 300w,
+          ${post.featuredImage?.url_small} 500w,
           ${post.featuredImage?.url_medium} 768w,
           ${post.featuredImage?.url} 1200w
         `}
-        sizes="(max-width: 1023px) 90vw, 800px"
+        sizes="(max-width: 1023px) 90vw, 695px"
         alt={post.title} 
         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         fetchpriority="high"

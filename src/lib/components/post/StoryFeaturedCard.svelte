@@ -9,16 +9,17 @@
   <div class="md:order-2">
     <div class="aspect-video overflow-hidden">
       <img 
-        src={post.featuredImage?.url_thumb || '/default-image.png'}
+        src={post.featuredImage?.url_placeholder || '/default-image.png'}
         srcset={`
           ${post.featuredImage?.url_thumb} 300w,
+          ${post.featuredImage?.url_small} 500w,
           ${post.featuredImage?.url_medium} 768w
         `}
-        sizes="(max-width: 767px) 90vw, 50vw"
+        sizes="(max-width: 767px) 90vw, 520px"
         alt={post.title} 
         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         loading="lazy"
-        width="300" height="169"
+        width="768" height="432"
       />
     </div>
   </div>
