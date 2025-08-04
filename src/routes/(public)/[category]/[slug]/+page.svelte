@@ -235,7 +235,7 @@
         {/if}
 
         <div id="article-content" class="prose lg:prose-lg dark:prose-invert max-w-none">
-          {@html post.content || ''}
+          {@html post.html || post.content || ''}
         </div>
       </article>
 
