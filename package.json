@@ -58,6 +58,7 @@
 		"@tiptap/extension-text-align": "^3.0.7",
 		"@tiptap/extension-youtube": "^3.0.7",
 		"@tiptap/starter-kit": "^3.0.7",
+		"@upstash/qstash": "^2.8.2",
 		"@upstash/redis": "^1.35.1",
 		"@vercel/blob": "^1.1.1",
 		"axios": "^1.10.0",

@@ -11,9 +11,10 @@
 
 <div
   transition:fly={{ x: -20, duration: 400, delay: 300 }}
-  class="fixed top-5 left-5 z-50 w-[calc(100%-2.5rem)] max-w-sm"
+  class="fixed top-4 left-4 z-50 w-[calc(100%-2rem)] max-w-sm"
 >
-  <div class="flex items-start gap-4 rounded-lg bg-white p-5 shadow-xl shadow-slate-900/10">
+  <div class="flex items-start gap-3 rounded-lg bg-white p-4 shadow-xl shadow-slate-900/10">
+    
     <div class="flex-shrink-0 text-slate-500">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -21,7 +22,7 @@
         viewBox="0 0 24 24"
         stroke-width="1.5"
         stroke="currentColor"
-        class="h-7 w-7"
+        class="h-6 w-6"
       >
         <path
           stroke-linecap="round"
@@ -32,21 +33,21 @@
     </div>
 
     <div class="flex-grow">
-      <h3 class="text-base font-semibold text-slate-800">Jangan Lewatkan Update Terbaru</h3>
-      <p class="mt-1 text-sm text-slate-600">
-        Aktifkan notifikasi untuk menerima artikel langsung di perangkat Anda.
+      <h3 class="text-sm font-bold text-slate-800">Jangan Lewatkan Update Terbaru</h3>
+      <p class="mt-0.5 text-sm text-slate-600">
+        Aktifkan notifikasi untuk menerima artikel terbaru.
       </p>
 
-      <div class="mt-5 flex gap-3">
+      <div class="mt-4 flex gap-2">
         <button
           on:click={() => handleResponse(true)}
-          class="cursor-pointer w-full rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-slate-700 active:scale-95"
+          class="cursor-pointer w-full rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white transition-all hover:bg-slate-700 active:scale-95"
         >
           Aktifkan
         </button>
         <button
           on:click={() => handleResponse(false)}
-          class="cursor-pointer w-full rounded-md bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-200"
+          class="cursor-pointer w-full rounded-md bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-200"
         >
           Nanti Saja
         </button>

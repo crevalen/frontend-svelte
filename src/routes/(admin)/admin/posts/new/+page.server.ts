@@ -4,7 +4,7 @@ import redis from '$lib/server/redis';
 import { db } from '$lib/server/db';
 import { uploadImage } from '$lib/server/blob';
 import { Prisma, SchemaType } from '@prisma/client';
-import { sendNotificationToAll } from '$lib/server/notifications';
+import { QSTASH_TOKEN } from '$env/static/private'; 
 import { revalidateFrontendPath } from '$lib/server/revalidate';
 
 const CATEGORIES_CACHE_KEY = 'taxonomies:categories';
@@ -33,7 +33,7 @@ export const load: PageServerLoad = async () => {
 };
 
 export const actions: Actions = {
-	default: async ({ request, locals }) => {
+	default: async ({ request, locals, url }) => {
 		if (!locals.user) throw redirect(302, '/login');
 
 		const formData = await request.formData();
@@ -110,7 +110,20 @@ export const actions: Actions = {
 
 			await redis.del('dashboard:stats', 'dashboard:popular_posts');
 			if (newPost.published) {
-				await sendNotificationToAll(newPost);
+				await fetch('https://qstash.upstash.io/v2/publish/new-posts', {
+                    method: 'POST',
+                    headers: {
+                        // Otorisasi menggunakan token Anda
+                        'Authorization': `Bearer ${QSTASH_TOKEN}`,
+                        // Tentukan topik. 'new-posts' adalah nama yang akan kita buat di Upstash
+                        'Upstash-Topic': 'new-posts',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        postId: newPost.id // Kirim data minimal yang diperlukan
+                    })
+                });
+
 				
 				// ## PERBAIKAN 2: Revalidasi yang lebih lengkap ##
 				await Promise.all([

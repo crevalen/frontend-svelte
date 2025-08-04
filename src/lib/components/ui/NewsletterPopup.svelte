@@ -12,7 +12,7 @@
 		if (!hasSeenPopup) {
 			const timer = setTimeout(() => {
 				showPopup = true;
-			}, 8000);
+			}, 14000);
 			return () => clearTimeout(timer);
 		}
 	});
