@@ -10,6 +10,10 @@ const CACHE_TTL_SECONDS = 3600;
 
 
 export const load: PageServerLoad = async ({ params, setHeaders }) => {
+    if (!params.slug) {
+        // Langsung lempar error 404 tanpa melanjutkan proses.
+        throw error(404, 'Halaman tidak ditemukan.');
+    }
     // Tetap gunakan cache Vercel ISR untuk HTML
     setHeaders({ 'Cache-Control': 'public, max-age=0, s-maxage=300' });
 
