@@ -8,6 +8,9 @@ export default defineConfig({
     sveltekit(),
 	
   ],
+  ssr: {
+		noExternal: ['svelte-html']
+	},
 
   envPrefix: ['VITE_', 'PUBLIC_']
 });
