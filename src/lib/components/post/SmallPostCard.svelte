@@ -1,28 +1,19 @@
 <script lang="ts">
   import { formatDate } from '$lib/utils/formatters';
-  import { lazyload } from '$lib/actions/lazyload';
-
-  export let post: {
-    slug: string;
-    title: string;
-    publishedAt: Date | string | null;
-    featuredImage?: { url: string; url_placeholder?: string; } | null;
-    categories?: { slug: string; name: string }[];
-  };
+  import type { Post } from '$lib/types';
+  export let post: Post;
   
   const category = post.categories?.[0];
   const categorySlug = category?.slug || 'tanpa-kategori';
-  const placeholderSrc = post.featuredImage?.url_placeholder || '/default-image.png';
-  const highResSrc = post.featuredImage?.url || '/default-image.png';
 </script>
 
 <a href={`/${categorySlug}/${post.slug}`} class="block group flex items-center gap-4">
   <div class="w-24 h-24 flex-shrink-0 overflow-hidden">
     <img 
-      src={placeholderSrc}
-      use:lazyload={highResSrc}
-      alt="" 
-      class="lazy-image w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+      src={post.featuredImage?.url_thumb || '/default-image.png'}
+      alt={post.title}
+      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+      loading="lazy"
       width="100" height="100"
     />
   </div>

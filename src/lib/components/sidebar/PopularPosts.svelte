@@ -1,7 +1,8 @@
 <script lang="ts">
   import { formatDate } from '$lib/utils/formatters';
   import { lazyload } from '$lib/actions/lazyload';
-  export let posts: any[] = [];
+  import type { Post } from '$lib/types'; // <-- 1. Gunakan tipe data
+  export let posts: Post[] = [];
 </script>
 
 <div class="bg-white dark:bg-slate-800 shadow-sm overflow-hidden">
@@ -16,12 +17,12 @@
           <div class="flex items-start gap-4">
             <div class="text-xl font-bold text-gray-300 dark:text-slate-600 pt-1">{i + 1}.</div>
             
-            <div class="w-16 h-16 flex-shrink-0 overflow-hidden">
+            <div class="w-16 h-16 flex-shrink-0 overflow-hidden rounded">
               <img 
                 src={post.featuredImage?.url_placeholder || '/default-image.png'} 
-                use:lazyload={post.featuredImage?.url}
-                alt=""
-                class="lazy-image w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                use:lazyload={post.featuredImage?.url_thumb}
+                alt={post.title}
+                class="lazy-image w-full h-full object-cover"
                 width="64" height="64"
               />
             </div>
