@@ -9,6 +9,25 @@ const getCacheKey = (slug: string) => `post-public:${slug}`;
 const CACHE_TTL_SECONDS = 3600; 
 
 
+// ++ FUNGSI BANTUAN BARU ++
+function insertPlaceholder(content: string): string {
+  const paragraphs = content.split('</p>');
+  // Jika paragraf kurang dari 4, jangan sisipkan apa pun
+  if (paragraphs.length < 4) {
+    return content;
+  }
+
+  // Tentukan posisi untuk menyisipkan (misalnya, setelah paragraf ke-3)
+  const insertionIndex = 6;
+
+  // Sisipkan placeholder sebagai tag HTML unik
+  paragraphs.splice(insertionIndex, 0, '<related-articles-placeholder />');
+
+  return paragraphs.join('</p>');
+}
+
+
+
 export const load: PageServerLoad = async ({ params, setHeaders }) => {
     if (!params.slug) {
         throw error(404, 'Halaman tidak ditemukan.');
@@ -105,9 +124,10 @@ export const load: PageServerLoad = async ({ params, setHeaders }) => {
 
         const schemaType = post.schemaType || 'BlogPosting';
         const jsonLd = buildSchema(post, meta, settingsMap, post.content);
+        const contentWithPlaceholder = insertPlaceholder(post.content);
         
         const dataToCache = {
-            post: { ...post, content: post.content },
+            post: { ...post, content: contentWithPlaceholder }, 
             meta,
             jsonLd,
             comments,
