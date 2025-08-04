@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher, onMount } from 'svelte';
 	import type { Media } from '@prisma/client';
-
 	export let media: Media[] = [];
 	const dispatch = createEventDispatcher();
 
@@ -29,7 +28,6 @@
 			method: 'POST',
 			body: formData
 		});
-
 		if (response.ok) {
 			const newImage = await response.json();
 			selectImage(newImage.url, newImage.altText);
@@ -50,8 +48,6 @@
 		if (e.key === 'Escape') dispatch('close');
 	}}
 >
-	<!-- svelte-ignore a11y_click_events_have_key_events -->
-	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 	<div
 		role="document"
 		class="w-full max-w-3xl rounded-lg bg-slate-800 shadow-xl"
@@ -59,12 +55,20 @@
 	>
 		<div class="border-b border-slate-700 p-4">
 			<div class="flex gap-x-4">
-				<button on:click={() => (activeTab = 'gallery')} class:active={activeTab === 'gallery'}
-					>Pilih dari Galeri</button
+				<button
+					type="button"
+					on:click={() => (activeTab = 'gallery')}
+					class:active={activeTab === 'gallery'}
 				>
-				<button on:click={() => (activeTab = 'upload')} class:active={activeTab === 'upload'}
-					>Unggah Baru</button
+					Pilih dari Galeri
+				</button>
+				<button
+					type="button"
+					on:click={() => (activeTab = 'upload')}
+					class:active={activeTab === 'upload'}
 				>
+					Unggah Baru
+				</button>
 			</div>
 		</div>
 
@@ -73,6 +77,7 @@
 				<div class="grid max-h-[60vh] grid-cols-4 gap-4 overflow-y-auto">
 					{#each media as item}
 						<button
+							type="button"
 							on:click={() => selectImage(item.url, item.altText ?? '')}
 							class="overflow-hidden rounded-lg ring-2 ring-transparent transition-all hover:ring-blue-500 focus:ring-blue-500"
 						>
@@ -98,10 +103,12 @@
 						class="mb-4 block w-full text-sm text-slate-400 file:mr-4 file:rounded-full file:border-0 file:bg-blue-500/10 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-300 hover:file:bg-blue-500/20"
 					/>
 					<button
+						type="button"
 						on:click={handleUpload}
 						class="rounded-lg bg-blue-600 px-6 py-2 text-sm font-semibold text-white"
-						>Unggah Sekarang</button
 					>
+						Unggah Sekarang
+					</button>
 				</div>
 			{/if}
 		</div>

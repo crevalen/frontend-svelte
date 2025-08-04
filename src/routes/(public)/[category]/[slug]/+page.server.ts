@@ -11,20 +11,18 @@ const CACHE_TTL_SECONDS = 3600;
 
 export const load: PageServerLoad = async ({ params, setHeaders }) => {
     if (!params.slug) {
-        // Langsung lempar error 404 tanpa melanjutkan proses.
         throw error(404, 'Halaman tidak ditemukan.');
     }
-    // Tetap gunakan cache Vercel ISR untuk HTML
     setHeaders({ 'Cache-Control': 'public, max-age=0, s-maxage=300' });
 
     const cacheKey = getCacheKey(params.slug);
 
      try {
-        
         const cachedData = await redis.get(cacheKey);
         if (typeof cachedData === 'string') {
             return JSON.parse(cachedData); 
         }
+
         const post = await db.post.findFirst({
             where: { slug: params.slug, published: true },
             include: {
@@ -43,14 +41,47 @@ export const load: PageServerLoad = async ({ params, setHeaders }) => {
         // 2. Ambil Data Tambahan
         const [comments, relatedPosts, settings, popularPosts] = await Promise.all([
             db.comment.findMany({ where: { postId: post.id, isApproved: true, parentId: null }, include: { replies: true }, orderBy: { createdAt: 'asc' } }),
+            
+            // ## PERBAIKAN UNTUK RELATED POSTS ##
             db.post.findMany({
                 where: { published: true, id: { not: post.id }, categories: { some: { id: post.categories[0]?.id } } },
-                select: { slug: true, title: true, publishedAt: true, featuredImage: { select: { url: true } }, categories: { select: { slug: true, name: true }, take: 1 } },
+                select: { 
+                    slug: true, 
+                    title: true, 
+                    categories: { select: { slug: true, name: true }, take: 1 },
+                    // Ambil URL gambar yang dibutuhkan oleh komponen SmallPostCard
+                    featuredImage: { 
+                        select: { 
+                            url_thumb: true 
+                        } 
+                    } 
+                },
                 take: 4
             }),
+            
             db.setting.findMany({ where: { key: { in: ['site_title', 'post_title_template', 'publisher_name', 'publisher_logo_url'] } } }),
-            db.post.findMany({ where: { published: true }, orderBy: { viewCount: 'desc' }, take: 5, select: { title: true, slug: true, publishedAt: true, featuredImage: { select: { url: true } }, categories: { select: { name: true, slug: true }, take: 1 } } })
+
+            // ## PERBAIKAN UNTUK POPULAR POSTS ##
+            db.post.findMany({ 
+                where: { published: true }, 
+                orderBy: { viewCount: 'desc' }, 
+                take: 5, 
+                select: { 
+                    title: true, 
+                    slug: true, 
+                    publishedAt: true, 
+                    categories: { select: { name: true, slug: true }, take: 1 },
+                    // Ambil URL gambar yang dibutuhkan oleh komponen PopularPosts
+                    featuredImage: { 
+                        select: { 
+                            url_placeholder: true,
+                            url_thumb: true
+                        } 
+                    }
+                } 
+            })
         ]);
+        
         
         
         const settingsMap = settings.reduce((acc: any, setting: {key: string, value: string}) => ({...acc, [setting.key]: setting.value}), {});
