@@ -4,28 +4,41 @@ import { db } from '$lib/server/db';
 import redis from '$lib/server/redis';
 import he from 'he';
 
-// --- Mengadopsi pola dari kode Anda ---
 const getCacheKey = (page: number) => `homepage:data:page:${page}`;
-const CACHE_TTL_SECONDS = 300; // Cache untuk 5 menit di homepage
+const CACHE_TTL_SECONDS = 300;
 
 export const load: PageServerLoad = async ({ url, setHeaders }) => {
-    // 1. Tetap gunakan cache Vercel ISR untuk HTML
-    // Ini akan menyimpan file HTML statis di Edge selama 5 menit
     setHeaders({ 'Cache-Control': 'public, max-age=0, s-maxage=300' });
 
     const page = Number(url.searchParams.get('page') ?? '1');
     const limit = 10;
     const cacheKey = getCacheKey(page);
 
-    try {
-        // 2. Coba ambil data dari Redis
-        const cachedData = await redis.get(cacheKey);
-        if (cachedData) {
-            // Jika ada, langsung kembalikan data dari cache
-            return JSON.parse(cachedData); 
-        }
+    // 1. Coba ambil data dari Redis
+    const cachedData = await redis.get(cacheKey);
 
-        // 3. Jika tidak ada di cache, lakukan query ke database
+    if (typeof cachedData === 'string') {
+        try {
+            // ## PERBAIKAN UTAMA ADA DI SINI ##
+            // Coba parse data. Jika berhasil, kembalikan.
+            return JSON.parse(cachedData);
+        } catch (e) {
+            // JIKA GAGAL, berarti cache rusak. Jangan panik.
+            console.warn(
+                `Cache untuk homepage (key: ${cacheKey}) terdeteksi rusak. Cache akan dihapus dan data akan dimuat ulang dari database.`
+            );
+            // Hapus kunci yang rusak agar tidak menyebabkan error lagi di masa depan.
+            await redis.del(cacheKey);
+            // Setelah dihapus, biarkan kode melanjutkan ke langkah berikutnya seolah-olah cache tidak ada.
+        }
+    }
+
+    // Kode akan sampai di sini jika:
+    // a) Cache tidak ada (cache miss).
+    // b) Cache ada tapi rusak (dan sekarang sudah dihapus).
+    try {
+        console.log(`Memuat data homepage dari database untuk halaman ${page}...`);
+
         const totalPosts = await db.post.count({ where: { published: true } });
         const totalPages = Math.ceil(totalPosts / limit);
 
@@ -37,11 +50,9 @@ export const load: PageServerLoad = async ({ url, setHeaders }) => {
             include: { categories: { take: 1 }, author: true, featuredImage: true }
         });
 
-        // Objek untuk menampung semua data
         let homepageData;
 
         if (page > 1) {
-            // Jika halaman lebih dari 1, hanya kirim data paginasi
             homepageData = {
                 featuredPost: null,
                 popularPosts: [],
@@ -51,7 +62,6 @@ export const load: PageServerLoad = async ({ url, setHeaders }) => {
                 pagination: { currentPage: page, totalPages }
             };
         } else {
-            // Jika halaman 1, ambil semua data seperti sebelumnya
             const [ featuredPost, popularPosts, gridPosts, storyPosts ] = await Promise.all([
                 db.post.findFirst({
                     where: { published: true },
@@ -98,13 +108,13 @@ export const load: PageServerLoad = async ({ url, setHeaders }) => {
         
         const dataToCache = { homepageData };
 
-        // 4. Simpan hasil lengkap ke Redis menggunakan sintaks Anda
+        // Simpan data yang baru dan bersih ke Redis
         await redis.set(cacheKey, JSON.stringify(dataToCache), { ex: CACHE_TTL_SECONDS });
         
         return dataToCache;
 
     } catch (e) {
-        console.error(`Gagal memuat data untuk homepage halaman ${page}:`, e);
+        console.error(`Gagal memuat data homepage dari database:`, e);
         throw error(500, 'Gagal terhubung ke server.');
     }
 };
