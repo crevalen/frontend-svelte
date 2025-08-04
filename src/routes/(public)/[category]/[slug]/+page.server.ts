@@ -6,7 +6,7 @@ import { PUBLIC_SITE_URL } from '$env/static/public';
 import { buildSchema } from '$lib/server/schema-builder';
 import RelatedArticles from '$lib/components/post/RelatedArticles.svelte';
 import { renderComponentToHTML } from '$lib/utils/renderComponentToHTML';
-import { insertHTMLIntoMiddle } from '$lib/utils/insertInlineComponent';
+import { insertRelatedAfterParagraph } from '$lib/utils/insertRelatedAfterParagraph';
 
 const getCacheKey = (slug: string) => `post-public:${slug}`;
 const CACHE_TTL_SECONDS = 3600;
@@ -132,11 +132,12 @@ export const load: PageServerLoad = async ({ params, setHeaders }) => {
 
 		// 6. Render HTML komponen RelatedArticles dan sisipkan ke konten
 		const relatedHTML = await renderComponentToHTML(RelatedArticles, { posts: relatedPosts });
-		const contentWithInline = insertHTMLIntoMiddle(post.content, relatedHTML);
+        const originalHTML = post.content;
+		const finalHTML = insertRelatedAfterParagraph(originalHTML, relatedHTML, 6);
 
 		// 7. Struktur final untuk dikirim dan disimpan
 		const dataToCache = {
-			post: { ...post, content: contentWithInline },
+			post: { ...post, html: finalHTML },
 			meta,
 			jsonLd,
 			comments,
