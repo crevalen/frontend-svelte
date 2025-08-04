@@ -140,7 +140,8 @@ await redis.del(
     publicOldCacheKey, 
     publicNewCacheKey, 
     'dashboard:stats', 
-    'dashboard:popular_posts'
+    'dashboard:popular_posts',
+	'homepage:data:page:1'
 );
 			// --- LOGIKA REVALIDASI YANG SUDAH DISEMPURNAKAN ---
 			const pathsToRevalidate = new Set<string>();

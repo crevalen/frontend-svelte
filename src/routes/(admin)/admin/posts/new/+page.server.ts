@@ -49,21 +49,13 @@ export const actions: Actions = {
 		const imageAltText = formData.get('imageAltText') as string;
 		const categoryNames = (formData.get('categories') as string)?.split(',').filter(Boolean).map((s) => s.trim());
 		const tagNames = (formData.get('tags') as string)?.split(',').filter(Boolean).map((s) => s.trim());
-		
-		let featuredImageId: string | undefined = undefined;
-		if (image?.size > 0) {
-			try {
-				const newImage = await uploadImage(image, imageAltText);
-				featuredImageId = newImage.id;
-			} catch {
-				return fail(500, { error: 'Gagal meng-upload gambar.' });
-			}
-		}
+
 
 		if (!title || title.length < 3) return fail(400, { error: 'Judul tidak valid.' });
 		if (!slug || !/^[a-z0-9-]+$/.test(slug)) return fail(400, { error: 'Slug tidak valid.' });
 
 		try {
+			// ## PERBAIKAN 1: Logika upload gambar hanya ada di sini ##
 			let featuredImageId: string | undefined = undefined;
 			if (image?.size > 0) {
 				const newImage = await uploadImage(image, imageAltText);
@@ -110,20 +102,18 @@ export const actions: Actions = {
 
 			await redis.del('dashboard:stats', 'dashboard:popular_posts');
 			if (newPost.published) {
+				await redis.del('homepage:data:page:1');
 				await fetch('https://qstash.upstash.io/v2/publish/new-posts', {
                     method: 'POST',
                     headers: {
-                        // Otorisasi menggunakan token Anda
                         'Authorization': `Bearer ${QSTASH_TOKEN}`,
-                        // Tentukan topik. 'new-posts' adalah nama yang akan kita buat di Upstash
-                        'Upstash-Topic': 'new-posts',
                         'Content-Type': 'application/json'
+                        // 'Upstash-Topic' header tidak lagi diperlukan
                     },
                     body: JSON.stringify({
-                        postId: newPost.id // Kirim data minimal yang diperlukan
+                        postId: newPost.id
                     })
                 });
-
 				
 				// ## PERBAIKAN 2: Revalidasi yang lebih lengkap ##
 				await Promise.all([
