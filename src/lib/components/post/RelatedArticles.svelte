@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Post } from '$lib/types';
   export let posts: Post[] = [];
+  
 </script>
 
 {#if posts.length > 0}
