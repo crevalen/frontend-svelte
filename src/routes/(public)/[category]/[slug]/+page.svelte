@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, tick } from 'svelte';
   import { afterNavigate } from '$app/navigation';
   import { browser } from '$app/environment';
   import type { PageData } from './$types';
@@ -92,8 +92,9 @@
     }
   }
 
-  function runClientSideLogic() {
+  async function runClientSideLogic() {
     if (!browser) return;
+    await tick(); 
     window.requestAnimationFrame(() => {
       generateToc();
       insertRelatedArticles();

@@ -52,6 +52,7 @@ export const load: PageServerLoad = async ({ params, setHeaders }) => {
                     // Ambil URL gambar yang dibutuhkan oleh komponen SmallPostCard
                     featuredImage: { 
                         select: { 
+                            url_placeholder: true,
                             url_thumb: true 
                         } 
                     } 
