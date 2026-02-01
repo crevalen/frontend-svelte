@@ -162,6 +162,8 @@ if (currentScrollY > lastScrollY && currentScrollY > 150) {
 <svelte:head>
   <title>{data.settings?.site_title ||
 'Judul Situs Default'}</title>
+  <meta property="fb:app_id" content="1570455227514773" />
+  <meta property="og:site_name" content="Crevalen" />
   <link rel="icon" href="/favicon.ico" type="image/x-icon" />
   {#if data.settings?.gsc_verification_code}<meta name="google-site-verification" content={data.settings.gsc_verification_code} />{/if}
   {#if data.settings?.bing_verification_code}<meta name="msvalidate.01" content={data.settings.bing_verification_code} />{/if}
